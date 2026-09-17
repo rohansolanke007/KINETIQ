@@ -1,10 +1,39 @@
+import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Atom } from "lucide-react";
+import { Atom, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function TopNavigation() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLaws = pathname.startsWith("/laws");
+
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("physics-lab-theme");
+
+    if (savedTheme === "light") {
+      setIsDark(false);
+      document.documentElement.classList.remove("dark");
+    } else {
+      setIsDark(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextIsDark = !isDark;
+
+    setIsDark(nextIsDark);
+
+    if (nextIsDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("physics-lab-theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("physics-lab-theme", "light");
+    }
+  };
 
   const modes = [
     { label: "SIMULATOR", to: "/", active: !isLaws },
@@ -18,9 +47,14 @@ export function TopNavigation() {
           <span className="grid size-8 place-items-center rounded-lg border border-primary/40 bg-primary/10 text-primary">
             <Atom className="size-4" />
           </span>
+
           <span className="leading-tight">
-            <span className="block text-[13px] font-semibold tracking-wide">PHYSICS LAB</span>
-            <span className="label-micro">Interactive C++ Physics Engine</span>
+            <span className="block text-[13px] font-semibold tracking-wide">
+              PHYSICS LAB
+            </span>
+            <span className="label-micro">
+              Interactive C++ Physics Engine
+            </span>
           </span>
         </Link>
 
@@ -39,6 +73,20 @@ export function TopNavigation() {
               {mode.label}
             </Link>
           ))}
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            className="ml-1 grid size-8 place-items-center rounded-md text-muted-foreground transition-all hover:bg-accent hover:text-foreground"
+          >
+            {isDark ? (
+              <Sun className="size-4" />
+            ) : (
+              <Moon className="size-4" />
+            )}
+          </button>
         </nav>
       </div>
     </header>
