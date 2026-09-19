@@ -117,6 +117,95 @@ static bool circleRectangleCollision(
     return true;
 }
 
+// -----------------------------------------------------------------------------
+// Exact Rectangle vs Rectangle collision (AABB)
+//
+// Rectangles in this project are axis-aligned, so collision detection can be
+// performed using their left/right/top/bottom bounds.
+//
+// The returned normal points from rectangle A -> rectangle B.
+// -----------------------------------------------------------------------------
+static bool rectangleRectangleCollision(
+    const PhysicsObject* a,
+    const PhysicsObject* b,
+    Vector2D& normalFromAToB,
+    double& penetration)
+{
+    const Rectangle* rectA =
+        dynamic_cast<const Rectangle*>(a->getShape());
+
+    const Rectangle* rectB =
+        dynamic_cast<const Rectangle*>(b->getShape());
+
+    if (!rectA || !rectB) {
+        return false;
+    }
+
+    const Vector2D posA = a->getPosition();
+    const Vector2D posB = b->getPosition();
+
+    const double halfWidthA = rectA->getWidth() / 2.0;
+    const double halfHeightA = rectA->getHeight() / 2.0;
+
+    const double halfWidthB = rectB->getWidth() / 2.0;
+    const double halfHeightB = rectB->getHeight() / 2.0;
+
+    const double leftA = posA.x - halfWidthA;
+    const double rightA = posA.x + halfWidthA;
+    const double bottomA = posA.y - halfHeightA;
+    const double topA = posA.y + halfHeightA;
+
+    const double leftB = posB.x - halfWidthB;
+    const double rightB = posB.x + halfWidthB;
+    const double bottomB = posB.y - halfHeightB;
+    const double topB = posB.y + halfHeightB;
+
+    // Check for separation on either axis.
+    if (rightA <= leftB ||
+        leftA >= rightB ||
+        topA <= bottomB ||
+        bottomA >= topB) {
+        return false;
+    }
+
+    // Calculate overlap on each axis.
+    const double overlapX =
+        std::min(rightA, rightB) - std::max(leftA, leftB);
+
+    const double overlapY =
+        std::min(topA, topB) - std::max(bottomA, bottomB);
+
+    // Resolve along the axis with the smallest penetration.
+    if (overlapX < overlapY) {
+
+        penetration = overlapX;
+
+        if (posB.x >= posA.x) {
+            normalFromAToB = Vector2D(1.0, 0.0);
+        } else {
+            normalFromAToB = Vector2D(-1.0, 0.0);
+        }
+
+    } else {
+
+        penetration = overlapY;
+
+        if (posB.y >= posA.y) {
+            normalFromAToB = Vector2D(0.0, 1.0);
+        } else {
+            normalFromAToB = Vector2D(0.0, -1.0);
+        }
+    }
+
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+// Exact Rectangle vs Rectangle collision (AABB)
+// -----------------------------------------------------------------------------
+
+
+
 
 // -----------------------------------------------------------------------------
 // Collision detection
@@ -222,6 +311,34 @@ std::vector<Collision> CollisionManager::detectCollisions(
                     collision.penetration = penetration;
                 }
             }
+            // -----------------------------------------------------------------
+            // Rectangle vs Rectangle
+            // -----------------------------------------------------------------
+            else if (
+                a->getShape()->getType() == ShapeType::RECTANGLE &&
+                b->getShape()->getType() == ShapeType::RECTANGLE
+            ) {
+
+                Vector2D normalAtoB;
+                double penetration = 0.0;
+
+                collided = rectangleRectangleCollision(
+                    a,
+                    b,
+                    normalAtoB,
+                    penetration
+                );
+
+                if (collided) {
+
+                    collision.idA = idA;
+                    collision.idB = idB;
+
+                    collision.normal = normalAtoB;
+                    collision.penetration = penetration;
+                }
+            }
+
 
             // -----------------------------------------------------------------
             // All other shape combinations continue using the project's
