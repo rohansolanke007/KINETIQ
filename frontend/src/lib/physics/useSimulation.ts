@@ -20,8 +20,22 @@ export function useSimulation() {
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<PhysicsState | null>(null);
   const [running, setRunning] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(1); 
 
+	type EnergyPoint = {
+  time: number;
+  kineticEnergy: number;
+};
+
+type VelocityPoint = {
+  time: number;
+  velocities: Record<number, number>;
+};
+
+const [energyHistory, setEnergyHistory] = useState<EnergyPoint[]>([]);
+const [velocityHistory, setVelocityHistory] = useState<VelocityPoint[]>([]);
+const lastEnergySampleRef = useRef(0);
+const lastVelocitySampleRef = useRef(0);
   const runningRef = useRef(false);
   const speedRef = useRef(1);
   speedRef.current = speed;
@@ -108,10 +122,50 @@ export function useSimulation() {
           }
         }
         try {
-          setState(readState(m));
-        } catch {
-          /* ignore transient read errors */
-        }
+  const nextState = readState(m);
+
+  setState(nextState);
+
+  if (runningRef.current) {
+  // Sample graph data every 0.1 seconds instead of every animation frame.
+  if (nextState.time - lastEnergySampleRef.current >= 0.1) {
+    lastEnergySampleRef.current = nextState.time;
+
+    // Kinetic energy history
+    setEnergyHistory((history) => {
+      const point = {
+        time: nextState.time,
+        kineticEnergy: nextState.stats.kineticEnergy,
+      };
+
+      return [...history, point].slice(-100);
+    });
+
+    // Velocity history for every dynamic body.
+    const velocities: Record<number, number> = {};
+
+    for (const object of nextState.objects) {
+      if (!object.isStatic) {
+        velocities[object.id] = Math.hypot(
+          object.vel.x,
+          object.vel.y,
+        );
+      }
+    }
+
+    setVelocityHistory((history) => {
+      const point = {
+        time: nextState.time,
+        velocities,
+      };
+
+      return [...history, point].slice(-100);
+    });
+  }
+}
+} catch {
+  /* ignore transient read errors */
+}
       }
       frame = requestAnimationFrame(tick);
     };
@@ -163,6 +217,9 @@ export function useSimulation() {
   const resetWorld = useCallback(() => {
     runningRef.current = false;
     setRunning(false);
+	setEnergyHistory([]);
+	setVelocityHistory([]);
+	lastEnergySampleRef.current = 0;
     call((m) => {
       m.reset();
       m.pause();
@@ -179,6 +236,8 @@ export function useSimulation() {
     status,
     error,
     state,
+    energyHistory,
+    velocityHistory,
     running,
     speed,
     setSpeed,

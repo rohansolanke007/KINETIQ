@@ -51,7 +51,7 @@ export function WorldCanvas({
     const view = computeViewport(stateRef.current);
     const scale = Math.min((w - PAD * 2) / view.width, (h - PAD * 2) / view.height);
     const originX = (w - view.width * scale) / 2;
-    const originY = (h + view.height * scale) / 2;
+    const originY = (h - PAD) ;
     return { scale, originX, originY, view, w, h };
   }, []);
 
