@@ -12,6 +12,7 @@ import { Inspector } from "@/components/simulator/Inspector";
 import { BodyList, CollisionPanel } from "@/components/simulator/BodyList";
 import { EnergyGraph } from "@/components/simulator/EnergyGraph";
 import { VelocityGraph } from "@/components/simulator/VelocityGraph";
+import { FormulaPanel } from "@/components/simulator/FormulaPanel";
 import { useSimulation } from "@/lib/physics/useSimulation";
 
 export const Route = createFileRoute("/")({
@@ -100,9 +101,7 @@ function SimulatorPage() {
               selectedId={selectedId}
               onSelect={setSelectedId}
               onDrag={(id, x, y) =>
-                sim.call((m) =>
-                  m.setObjectPosition(id, x, y),
-                )
+                sim.call((m) => m.setObjectPosition(id, x, y))
               }
               showGrid={showGrid}
               showVectors={showVectors}
@@ -123,18 +122,28 @@ function SimulatorPage() {
 
         {/* RIGHT SIDEBAR */}
         <div className="scroll-thin flex max-h-[calc(100vh-9rem)] flex-col gap-3 overflow-y-auto xl:max-h-none">
+
+          {/* FORMULA + LIVE CALCULATION */}
+          <FormulaPanel
+            state={sim.state}
+            selectedId={selectedId}
+          />
+
+          {/* SELECTED BODY */}
           <Inspector
             sim={sim}
             selectedId={selectedId}
             onCleared={() => setSelectedId(null)}
           />
 
+          {/* ALL BODIES */}
           <BodyList
             state={sim.state}
             selectedId={selectedId}
             onSelect={setSelectedId}
           />
 
+          {/* COLLISIONS */}
           <CollisionPanel state={sim.state} />
         </div>
       </div>

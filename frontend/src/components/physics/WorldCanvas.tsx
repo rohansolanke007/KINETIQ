@@ -51,7 +51,7 @@ export function WorldCanvas({
     const view = computeViewport(stateRef.current);
     const scale = Math.min((w - PAD * 2) / view.width, (h - PAD * 2) / view.height);
     const originX = (w - view.width * scale) / 2;
-    const originY = (h - PAD) ;
+    const originY = PAD + view.height * scale;
     return { scale, originX, originY, view, w, h };
   }, []);
 
@@ -197,30 +197,127 @@ export function WorldCanvas({
       }
 
       // velocity vector
-      if (showVectors && !o.isStatic) {
-        const vx = o.vel.x * scale * 0.5;
-        const vy = o.vel.y * scale * 0.5;
-        if (Math.hypot(vx, vy) > 3) {
-          ctx.save();
-          ctx.strokeStyle = css("--green");
-          ctx.fillStyle = css("--green");
-          ctx.lineWidth = 1.4;
-          ctx.beginPath();
-          ctx.moveTo(cx, cy);
-          ctx.lineTo(cx + vx, cy - vy);
-          ctx.stroke();
-          const angle = Math.atan2(-vy, vx);
-          ctx.translate(cx + vx, cy - vy);
-          ctx.rotate(angle);
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(-7, 3.5);
-          ctx.lineTo(-7, -3.5);
-          ctx.closePath();
-          ctx.fill();
-          ctx.restore();
-        }
-      }
+      // velocity vectors: Vx, Vy and resultant V
+if (showVectors && !o.isStatic) {
+  const vx = o.vel.x * scale * 0.5;
+  const vy = o.vel.y * scale * 0.5;
+
+  const drawArrow = (
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    color: string,
+    label: string,
+  ) => {
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const length = Math.hypot(dx, dy);
+
+    if (length < 3) return;
+
+    const angle = Math.atan2(dy, dx);
+
+    ctx.save();
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1.5;
+
+    // shaft
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+
+    // arrow head
+    ctx.translate(endX, endY);
+    ctx.rotate(angle);
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-7, 3.5);
+    ctx.lineTo(-7, -3.5);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+
+    // label
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.font = "9px ui-monospace, monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const labelOffset = 10;
+
+    if (label === "Vx") {
+      ctx.fillText(
+        label,
+        (startX + endX) / 2,
+        (startY + endY) / 2 - labelOffset,
+      );
+    } else if (label === "Vy") {
+      ctx.fillText(
+        label,
+        (startX + endX) / 2 + labelOffset,
+        (startY + endY) / 2,
+      );
+    } else {
+      ctx.fillText(
+        label,
+        endX + 10,
+        endY - 10,
+      );
+    }
+
+    ctx.restore();
+  };
+
+  const vxColor = css("--blue");
+  const vyColor = css("--purple");
+  const vColor = css("--green");
+
+  // -----------------------------
+  // X COMPONENT — Vx
+  // -----------------------------
+  drawArrow(
+    cx,
+    cy,
+    cx + vx,
+    cy,
+    vxColor,
+    "Vx",
+  );
+
+  // -----------------------------
+  // Y COMPONENT — Vy
+  // -----------------------------
+  drawArrow(
+    cx,
+    cy,
+    cx,
+    cy - vy,
+    vyColor,
+    "Vy",
+  );
+
+  // -----------------------------
+  // RESULTANT VELOCITY — V
+  // -----------------------------
+  const resultX = cx + vx;
+  const resultY = cy - vy;
+
+  drawArrow(
+    cx,
+    cy,
+    resultX,
+    resultY,
+    vColor,
+    "V",
+  );
+}
 
       // id label
       ctx.save();
