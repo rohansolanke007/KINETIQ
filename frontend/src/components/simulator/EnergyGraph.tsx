@@ -42,9 +42,9 @@ export function EnergyGraph({
   }
 
   const data = energyHistory.map((point) => ({
-    time: Number(point.time.toFixed(2)),
-    kineticEnergy: Number(point.kineticEnergy.toFixed(3)),
-  }));
+  time: Number(point.time.toFixed(2)),
+  kineticEnergy: Number(point.kineticEnergy.toFixed(3)),
+}));
 
   const energies = data.map((point) => point.kineticEnergy);
 
@@ -100,25 +100,15 @@ export function EnergyGraph({
             opacity={0.2}
           />
 
-          <XAxis
+         <XAxis
             dataKey="time"
             type="number"
-            domain={["dataMin", "dataMax"]}
+            domain={[0, "dataMax"]}
             tickLine={false}
             axisLine={false}
-            tickMargin={8}
+            tickMargin={6}
             tick={{ fontSize: 9 }}
-            interval={0}
-            ticks={Array.from(
-              {
-                length:
-                  Math.floor(
-                    data[data.length - 1].time
-                  ) + 1,
-              },
-              (_, i) => i
-            )}
-            tickFormatter={(value) => `${value}s`}
+            tickFormatter={(value) => `${Number(value).toFixed(1)}s`}
           />
 
           <YAxis

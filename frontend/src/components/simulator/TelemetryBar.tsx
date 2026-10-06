@@ -30,7 +30,7 @@ export function TelemetryBar({
         />
         <span className="tech text-[10px] tracking-[0.16em]">
           {online
-            ? "C++ ENGINE ONLINE"
+            ? "KINETIQ ONLINE"
             : status === "error"
               ? "ENGINE OFFLINE"
               : "LOADING WEBASSEMBLY…"}

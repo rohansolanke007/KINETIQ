@@ -27,7 +27,7 @@ export function CreatePanel({ sim }: { sim: Simulation }) {
   };
 
   return (
-    <Panel title="CREATE BODY" subtitle="Bodies are constructed inside the C++ world">
+    <Panel title="CREATE BODY" subtitle="Create and configure simulation bodies">
       <div className="space-y-3">
         <SegmentedControl
           value={shape}

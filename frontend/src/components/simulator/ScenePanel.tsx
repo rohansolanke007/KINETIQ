@@ -4,7 +4,7 @@ import type { Simulation } from "@/lib/physics/useSimulation";
 
 export function ScenePanel({ sim }: { sim: Simulation }) {
   return (
-    <Panel title="SCENE PRESETS" subtitle="Each preset is assembled through the C++ API">
+    <Panel title="SCENE PRESETS" subtitle="Each preset is ready to run">
       <div className="space-y-2">
         {scenePresets.map((preset) => (
           <button

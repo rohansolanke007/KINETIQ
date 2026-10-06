@@ -22,11 +22,11 @@ const chartConfig = {
 
 // Different colors for different bodies
 const BODY_COLORS = [
-  "hsl(32 95% 50%)",   // orange - Body #1
-  "hsl(18 90% 48%)",   // darker orange - Body #2
-  "hsl(45 95% 45%)",   // amber - Body #3
-  "hsl(10 80% 55%)",   // light orange/red - Body #4
-  "hsl(25 85% 40%)",   // dark orange - Body #5
+  "hsl(32 95% 55%)",  // amber - Body #1
+  "hsl(190 85% 55%)", // cyan - Body #2
+  "hsl(285 75% 65%)", // purple - Body #3
+  "hsl(155 75% 55%)", // green - Body #4
+  "hsl(215 85% 65%)", // blue - Body #5
 ];
 
 export function VelocityGraph({
@@ -138,11 +138,13 @@ export function VelocityGraph({
 
           <XAxis
             dataKey="time"
+            type="number"
+            domain={[0, "dataMax"]}
             tickLine={false}
             axisLine={false}
             tickMargin={8}
             tick={{ fontSize: 9 }}
-            tickFormatter={(value) => `${value}s`}
+            tickFormatter={(value) => `${Number(value).toFixed(1)}s`}
           />
 
           <YAxis

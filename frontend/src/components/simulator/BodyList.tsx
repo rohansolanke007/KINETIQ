@@ -14,7 +14,7 @@ export function BodyList({
 }) {
   const objects = state?.objects ?? [];
   return (
-    <Panel title="BODIES" subtitle={`${objects.length} tracked in the C++ world`}>
+    <Panel title="BODIES" subtitle={`${objects.length} bodies in the simulation`}>
       {objects.length === 0 ? (
         <p className="text-[11px] text-muted-foreground">The world is empty. Add a body to begin.</p>
       ) : (
@@ -53,7 +53,7 @@ export function CollisionPanel({ state }: { state: PhysicsState | null }) {
   return (
     <Panel title="COLLISIONS" subtitle={`${state?.stats.collisions ?? 0} total detected`}>
       {collisions.length === 0 ? (
-        <p className="text-[11px] text-muted-foreground">No contacts in the latest C++ step.</p>
+        <p className="text-[11px] text-muted-foreground">No contacts in the latest simulation step.</p>
       ) : (
         <div className="space-y-1.5">
           {collisions.map((c, i) => (

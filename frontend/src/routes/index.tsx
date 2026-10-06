@@ -18,18 +18,14 @@ import { useSimulation } from "@/lib/physics/useSimulation";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Simulator — Physics Lab" },
+      { title: "Kinetiq — Physics Simulator" },
       {
         name: "description",
         content:
-          "Build bodies, tune gravity and friction, and watch a real C++ physics engine solve the motion live in your browser.",
+          "Build bodies, tune gravity and friction, and explore interactive physics simulations directly in your browser.",
       },
-      { property: "og:title", content: "Simulator — Physics Lab" },
-      {
-        property: "og:description",
-        content:
-          "Interactive 2D mechanics sandbox powered by a C++ engine compiled to WebAssembly.",
-      },
+      { property: "og:title", content: "Kinetiq — Physics Simulator" },
+      { property: "og:description", content: "An interactive 2D physics simulator for exploring mechanics and motion." },
     ],
   }),
   component: SimulatorPage,
@@ -57,18 +53,18 @@ function SimulatorPage() {
       URL.revokeObjectURL(url);
     });
 
-    toast.success("World state exported from the C++ engine.");
+    toast.success("World state exported successfully.");
   };
 
   return (
     <main className="mx-auto flex w-full max-w-[1700px] flex-1 flex-col gap-3 p-3 sm:p-4">
-      <h1 className="sr-only">Physics Lab simulator</h1>
+      <h1 className="sr-only">Kinetiq physics simulator</h1>
 
       <TelemetryBar state={sim.state} status={sim.status} />
 
       {sim.status === "error" && (
         <div className="glass rounded-xl border-red/40 px-4 py-3 text-[12px] text-red">
-          {sim.error ?? "The C++ engine could not be loaded."}
+          {sim.error ?? "The simulation could not be loaded."}
         </div>
       )}
 

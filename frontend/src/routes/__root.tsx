@@ -80,11 +80,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Physics Lab — Interactive C++ Physics Engine" },
+      { title: "Kinetiq — Interactive Physics Simulator" },
       {
         name: "description",
         content:
-          "Physics Lab is an interactive simulator and mechanics learning lab powered by a C++ physics engine compiled to WebAssembly.",
+          "Kinetiq is an interactive physics simulator for exploring mechanics, motion, and physical laws.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

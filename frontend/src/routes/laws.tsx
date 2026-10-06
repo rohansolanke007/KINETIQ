@@ -37,7 +37,7 @@ export const Route = createFileRoute("/laws")({
       {
         property: "og:description",
         content:
-          "Run guided mechanics experiments driven by a C++ physics engine.",
+          "Run guided mechanics experiments and explore the laws of motion.",
       },
     ],
   }),
@@ -208,7 +208,7 @@ function LawsPage() {
           </div>
           <Panel
   title="LIVE CALCULATION"
-  subtitle="Calculated from the C++ simulation state"
+  subtitle="Calculated from the live simulation"
 >
   <div className="space-y-3">
 
@@ -373,7 +373,7 @@ function LawsPage() {
 
           <Panel
             title="LIVE MEASUREMENTS"
-            subtitle="Read directly from the C++ state"
+            subtitle="Read directly from the live simulation"
           >
             <div className="grid grid-cols-2 gap-2">
 

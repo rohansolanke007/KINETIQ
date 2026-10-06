@@ -20,7 +20,7 @@ export function WorldPanel({ sim }: { sim: Simulation }) {
   const disabled = sim.status !== "ready";
 
   return (
-    <Panel title="WORLD FORCES" subtitle="Values are applied by the C++ engine">
+    <Panel title="WORLD FORCES" subtitle="Configure forces and simulation parameters">
       <div className="space-y-3">
         <Field label="GRAVITY" suffix={state?.gravityEnabled ? "enabled" : "disabled"}>
           <NumberInput value={gravity} onChange={setGravity} step={0.1} />

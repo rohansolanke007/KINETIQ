@@ -50,10 +50,10 @@ export function TopNavigation() {
 
           <span className="leading-tight">
             <span className="block text-[13px] font-semibold tracking-wide">
-              PHYSICS LAB
+              KINETIQ
             </span>
             <span className="label-micro">
-              Interactive C++ Physics Engine
+              Interactive Physics Simulator
             </span>
           </span>
         </Link>

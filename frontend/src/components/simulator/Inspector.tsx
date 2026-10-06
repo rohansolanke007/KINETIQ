@@ -34,7 +34,7 @@ export function Inspector({
       <Panel title="INSPECTOR" subtitle="Select a body on the board">
         <p className="text-[11px] leading-relaxed text-muted-foreground">
           Click any body in the simulation board to inspect its live state, edit its position and
-          velocity, or apply an impulse through the C++ engine.
+          velocity, or apply an impulse through the simulator.
         </p>
       </Panel>
     );

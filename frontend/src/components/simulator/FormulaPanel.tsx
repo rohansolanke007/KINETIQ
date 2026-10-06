@@ -12,7 +12,7 @@ export function FormulaPanel({
       <div className="glass rounded-xl border border-border p-4">
         <div className="label-micro">FORMULA & CALCULATION</div>
         <p className="mt-2 text-[11px] text-muted-foreground">
-          Start the physics engine to view live calculations.
+          Start the simulation to view live calculations.
         </p>
       </div>
     );
