@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FormulasRouteImport } from './routes/formulas'
 import { Route as LawsRouteImport } from './routes/laws'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormulasRoute = FormulasRouteImport.update({
+  id: '/formulas',
+  path: '/formulas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LawsRoute = LawsRouteImport.update({
@@ -25,27 +31,31 @@ const LawsRoute = LawsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/formulas': typeof FormulasRoute
   '/laws': typeof LawsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/formulas': typeof FormulasRoute
   '/laws': typeof LawsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/formulas': typeof FormulasRoute
   '/laws': typeof LawsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/laws'
+  fullPaths: '/' | '/formulas' | '/laws'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/laws'
-  id: '__root__' | '/' | '/laws'
+  to: '/' | '/formulas' | '/laws'
+  id: '__root__' | '/' | '/formulas' | '/laws'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FormulasRoute: typeof FormulasRoute
   LawsRoute: typeof LawsRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/formulas': {
+      id: '/formulas'
+      path: '/formulas'
+      fullPath: '/formulas'
+      preLoaderRoute: typeof FormulasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/laws': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FormulasRoute: FormulasRoute,
   LawsRoute: LawsRoute,
 }
 export const routeTree = rootRouteImport

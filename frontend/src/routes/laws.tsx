@@ -18,6 +18,168 @@ import { TelemetryBar } from "@/components/simulator/TelemetryBar";
 import { experiments } from "@/lib/physics/experiments";
 import { useSimulation } from "@/lib/physics/useSimulation";
 import { cn } from "@/lib/utils";
+type LawFormula = {
+  id: string;
+  category: string;
+  name: string;
+  formula: string;
+};
+
+const LAW_FORMULAS: LawFormula[] = [
+  // Kinematics
+  {
+    id: "kin-1",
+    category: "KINEMATICS",
+    name: "First Equation of Motion",
+    formula: "v = u + at",
+  },
+  {
+    id: "kin-2",
+    category: "KINEMATICS",
+    name: "Displacement",
+    formula: "s = ut + ½at²",
+  },
+  {
+    id: "kin-3",
+    category: "KINEMATICS",
+    name: "Velocity–Displacement",
+    formula: "v² = u² + 2as",
+  },
+  {
+    id: "kin-4",
+    category: "KINEMATICS",
+    name: "Average Velocity",
+    formula: "s = ½(u + v)t",
+  },
+
+  // Dynamics
+  {
+    id: "dyn-1",
+    category: "DYNAMICS",
+    name: "Newton's Second Law",
+    formula: "F = ma",
+  },
+  {
+    id: "dyn-2",
+    category: "DYNAMICS",
+    name: "Weight",
+    formula: "W = mg",
+  },
+  {
+    id: "dyn-3",
+    category: "DYNAMICS",
+    name: "Friction",
+    formula: "f = μN",
+  },
+  {
+    id: "dyn-4",
+    category: "DYNAMICS",
+    name: "Acceleration",
+    formula: "a = F / m",
+  },
+
+  // Momentum
+  {
+    id: "mom-1",
+    category: "MOMENTUM",
+    name: "Linear Momentum",
+    formula: "p = mv",
+  },
+  {
+    id: "mom-2",
+    category: "MOMENTUM",
+    name: "Impulse",
+    formula: "J = Δp",
+  },
+  {
+    id: "mom-3",
+    category: "MOMENTUM",
+    name: "Impulse from Force",
+    formula: "J = FΔt",
+  },
+  {
+    id: "mom-4",
+    category: "MOMENTUM",
+    name: "Conservation of Momentum",
+    formula: "m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂",
+  },
+
+  // Energy
+  {
+    id: "energy-1",
+    category: "ENERGY",
+    name: "Kinetic Energy",
+    formula: "KE = ½mv²",
+  },
+  {
+    id: "energy-2",
+    category: "ENERGY",
+    name: "Potential Energy",
+    formula: "PE = mgh",
+  },
+  {
+    id: "energy-3",
+    category: "ENERGY",
+    name: "Work",
+    formula: "W = Fd",
+  },
+  {
+    id: "energy-4",
+    category: "ENERGY",
+    name: "Power",
+    formula: "P = W / t",
+  },
+
+  // Projectile Motion
+  {
+    id: "proj-1",
+    category: "PROJECTILE MOTION",
+    name: "Horizontal Velocity",
+    formula: "vₓ = v₀cosθ",
+  },
+  {
+    id: "proj-2",
+    category: "PROJECTILE MOTION",
+    name: "Vertical Velocity",
+    formula: "vᵧ = v₀sinθ − gt",
+  },
+  {
+    id: "proj-3",
+    category: "PROJECTILE MOTION",
+    name: "Horizontal Position",
+    formula: "x = v₀cosθ · t",
+  },
+  {
+    id: "proj-4",
+    category: "PROJECTILE MOTION",
+    name: "Vertical Position",
+    formula: "y = v₀sinθ · t − ½gt²",
+  },
+
+  // Vectors
+  {
+    id: "vec-1",
+    category: "VECTORS",
+    name: "Velocity Magnitude",
+    formula: "|v| = √(vₓ² + vᵧ²)",
+  },
+  {
+    id: "vec-2",
+    category: "VECTORS",
+    name: "Acceleration Magnitude",
+    formula: "|a| = √(aₓ² + aᵧ²)",
+  },
+  {
+    id: "vec-3",
+    category: "VECTORS",
+    name: "Velocity Direction",
+    formula: "θ = tan⁻¹(vᵧ / vₓ)",
+  },
+];
+
+const LAW_FORMULA_CATEGORIES = Array.from(
+  new Set(LAW_FORMULAS.map((formula) => formula.category)),
+);
 
 export const Route = createFileRoute("/laws")({
   head: () => ({
@@ -50,10 +212,16 @@ function LawsPage() {
   const [activeId, setActiveId] = useState(
     experiments[0]!.id,
   );
+  const [selectedFormulaId, setSelectedFormulaId] = useState(
+  LAW_FORMULAS[0]!.id,
+);
 
   const active =
     experiments.find((e) => e.id === activeId) ??
     experiments[0]!;
+    const selectedFormula =
+  LAW_FORMULAS.find((formula) => formula.id === selectedFormulaId) ??
+  LAW_FORMULAS[0]!;
 
   useEffect(() => {
     if (sim.status !== "ready") return;
@@ -88,9 +256,11 @@ function LawsPage() {
         <Panel
           title="EXPERIMENT LIBRARY"
           subtitle={`${experiments.length} guided demonstrations`}
-        >
-          <div className="space-y-2">
-            {experiments.map((e, i) => (
+        > 
+         
+          <div className="scroll-thin max-h-[calc(100vh-13rem)] overflow-y-auto pr-1">
+              <div className="space-y-2">
+                {experiments.map((e, i) => (
               <button
                 key={e.id}
                 type="button"
@@ -110,12 +280,16 @@ function LawsPage() {
                 <div className="tech mt-1 text-[11px] tracking-[0.12em] text-foreground">
                   {e.name}
                 </div>
+                  <div className="mt-2 rounded border border-border/50 bg-background/50 px-2 py-1 font-mono text-[10px] text-primary">
+                    {e.formula}
+                  </div>
 
                 <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
                   {e.description}
                 </p>
               </button>
             ))}
+            </div>
           </div>
         </Panel>
 
@@ -316,48 +490,48 @@ function LawsPage() {
 
           <Panel
             title="FORMULA LIBRARY"
-            subtitle="Select a law to load its demonstration"
+            subtitle={`${LAW_FORMULAS.length} reference equations`}
           >
-            <div className="scroll-thin max-h-[420px] space-y-2 overflow-y-auto pr-1">
-              {experiments.map((experiment) => (
-                <button
-                  key={experiment.id}
-                  type="button"
-                  onClick={() =>
-                    setActiveId(experiment.id)
-                  }
-                  className={cn(
-                    "w-full rounded-md border px-3 py-2 text-left transition-all",
-                    experiment.id === activeId
-                      ? "border-primary/50 bg-primary/10"
-                      : "border-border bg-background/40 hover:bg-accent",
-                  )}
-                >
+              <div className="scroll-thin max-h-[420px] space-y-4 overflow-y-auto pr-1">
+                {LAW_FORMULA_CATEGORIES.map((category) => (
+  <div key={category}>
+    <div className="label-micro mb-2">{category}</div>
 
-                  <div className="flex items-center justify-between gap-2">
+    <div className="space-y-1">
+      {LAW_FORMULAS.filter(
+        (formula) => formula.category === category,
+      ).map((formula) => (
+        <button
+          key={formula.id}
+          type="button"
+          onClick={() => setSelectedFormulaId(formula.id)}
+          className={cn(
+            "w-full rounded-md border px-3 py-2 text-left transition-all",
+            formula.id === selectedFormulaId
+              ? "border-primary/50 bg-primary/10"
+              : "border-border bg-background/40 hover:bg-accent",
+          )}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span className="label-micro">
+              {formula.name}
+            </span>
 
-                    <span className="label-micro">
-                      {experiment.law}
-                    </span>
+            {formula.id === selectedFormulaId && (
+              <span className="text-[9px] text-primary">
+                SELECTED
+              </span>
+            )}
+          </div>
 
-                    {experiment.id === activeId && (
-                      <span className="text-[9px] text-primary">
-                        ACTIVE
-                      </span>
-                    )}
-
-                  </div>
-
-                  <div className="tech mt-1 text-[11px] text-foreground">
-                    {experiment.name}
-                  </div>
-
-                  <div className="mt-1 rounded border border-border/50 bg-background/50 px-2 py-1 font-mono text-[10px] text-primary">
-                    {experiment.formula}
-                  </div>
-
-                </button>
-              ))}
+          <div className="mt-1 rounded border border-border/50 bg-background/50 px-2 py-1 font-mono text-[10px] text-primary">
+            {formula.formula}
+          </div>
+        </button>
+      ))}
+    </div>
+  </div>
+))}
 
             </div>
           </Panel>

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 export function TopNavigation() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLaws = pathname.startsWith("/laws");
+  const isFormulas = pathname.startsWith("/formulas");
 
   const [isDark, setIsDark] = useState(true);
 
@@ -36,9 +37,22 @@ export function TopNavigation() {
   };
 
   const modes = [
-    { label: "SIMULATOR", to: "/", active: !isLaws },
-    { label: "PHYSICS LAWS", to: "/laws", active: isLaws },
-  ] as const;
+  {
+    label: "SIMULATOR",
+    to: "/",
+    active: !isLaws && !isFormulas,
+  },
+  {
+    label: "PHYSICS LAWS",
+    to: "/laws",
+    active: isLaws,
+  },
+  {
+    label: "FORMULA LIBRARY",
+    to: "/formulas",
+    active: isFormulas,
+  },
+] as const;
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/70 backdrop-blur-xl">
