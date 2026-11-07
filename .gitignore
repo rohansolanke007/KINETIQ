@@ -14,3 +14,13 @@ frontend/.tanstack/
 # Logs
 *.log
 npm-debug.log*
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+
+# Local frontend backup
+frontend_backup/
