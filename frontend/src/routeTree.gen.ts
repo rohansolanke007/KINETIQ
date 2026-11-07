@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as FormulasRouteImport } from './routes/formulas'
 import { Route as LawsRouteImport } from './routes/laws'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedbackRoute = FeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormulasRoute = FormulasRouteImport.update({
@@ -31,30 +37,34 @@ const LawsRoute = LawsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/feedback': typeof FeedbackRoute
   '/formulas': typeof FormulasRoute
   '/laws': typeof LawsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/feedback': typeof FeedbackRoute
   '/formulas': typeof FormulasRoute
   '/laws': typeof LawsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/feedback': typeof FeedbackRoute
   '/formulas': typeof FormulasRoute
   '/laws': typeof LawsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/formulas' | '/laws'
+  fullPaths: '/' | '/feedback' | '/formulas' | '/laws'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/formulas' | '/laws'
-  id: '__root__' | '/' | '/formulas' | '/laws'
+  to: '/' | '/feedback' | '/formulas' | '/laws'
+  id: '__root__' | '/' | '/feedback' | '/formulas' | '/laws'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FeedbackRoute: typeof FeedbackRoute
   FormulasRoute: typeof FormulasRoute
   LawsRoute: typeof LawsRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feedback': {
+      id: '/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/formulas': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FeedbackRoute: FeedbackRoute,
   FormulasRoute: FormulasRoute,
   LawsRoute: LawsRoute,
 }
