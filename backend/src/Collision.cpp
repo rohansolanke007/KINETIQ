@@ -1,4 +1,5 @@
 #include "Collision.h"
+#include "Exceptions.h"
 #include "Shape.h"
 
 #include <algorithm>
@@ -389,6 +390,13 @@ std::vector<Collision> CollisionManager::detectCollisions(
 // -----------------------------------------------------------------------------
 // Collision resolution
 // -----------------------------------------------------------------------------
+void CollisionManager::setRestitution(double e) {
+    if (!std::isfinite(e) || e < 0.0 || e > 1.0) {
+        throw InvalidSimulationException("Coefficient of restitution must be between 0 and 1.");
+    }
+    restitution_ = e;
+}
+
 void CollisionManager::resolveCollisions(
     ObjectManager<PhysicsObject>& objects,
     const std::vector<Collision>& collisions)
@@ -441,7 +449,7 @@ void CollisionManager::resolveCollisions(
         // ---------------------------------------------------------------------
         // 2. Simple velocity response
         // ---------------------------------------------------------------------
-        const double restitution = 0.6;
+        const double restitution = restitution_;
 
         // Dynamic vs Dynamic
         if (!a->isStatic() && !b->isStatic()) {
@@ -459,19 +467,26 @@ void CollisionManager::resolveCollisions(
                 continue;
             }
 
+            // Impulse along the normal, weighted by the inverse masses:
+            //   j = -(1 + e) v_n / (1/mA + 1/mB)
+            // Each body changes velocity by j / m, so the total momentum
+            // mA vA + mB vB is conserved for ANY pair of masses.
+            const double invMassSum =
+                1.0 / a->getMass() + 1.0 / b->getMass();
+
             const double impulseMag =
                 -(1.0 + restitution) *
-                velAlongNormal / 2.0;
+                velAlongNormal / invMassSum;
 
             Vector2D impulse =
                 c.normal * impulseMag;
 
             a->setVelocity(
-                a->getVelocity() - impulse
+                a->getVelocity() - impulse * (1.0 / a->getMass())
             );
 
             b->setVelocity(
-                b->getVelocity() + impulse
+                b->getVelocity() + impulse * (1.0 / b->getMass())
             );
         }
 
@@ -504,7 +519,9 @@ void CollisionManager::resolveCollisions(
                 a->getVelocity().x * normalAtoB.x +
                 a->getVelocity().y * normalAtoB.y;
 
-            if (velAlongNormal > 0) {
+            // The normal points from A to B, so A is approaching the static
+            // body when its velocity along the normal is POSITIVE.
+            if (velAlongNormal <= 0) {
                 continue;
             }
 

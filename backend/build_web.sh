@@ -18,10 +18,19 @@ em++ \
   -Wall -Wextra \
   -Iinclude \
   src/Collision.cpp \
+  src/CollisionSimulation.cpp \
   src/Force.cpp \
+  src/FreeBodyDiagram.cpp \
+  src/InclinedPlaneSimulation.cpp \
+  src/PendulumSimulation.cpp \
   src/PhysicsEngine.cpp \
   src/PhysicsObject.cpp \
+  src/ProjectileSimulation.cpp \
+  src/SeriesRecorder.cpp \
+  src/SHMSimulation.cpp \
   src/Shape.cpp \
+  src/Simulation.cpp \
+  src/SimulationManager.cpp \
   src/SimulationState.cpp \
   src/Vector2D.cpp \
   src/World.cpp \
@@ -34,7 +43,13 @@ em++ \
   -o web/physics_engine.js
 
 echo
- echo "WebAssembly build complete."
+# Keep the React app's copy of the engine in sync with the fresh build.
+if [ -d "../frontend/public" ]; then
+  cp web/physics_engine.js web/physics_engine.wasm ../frontend/public/
+  echo "Copied physics_engine.js/.wasm to frontend/public/"
+fi
+
+echo "WebAssembly build complete."
 echo "Serve the web directory with:"
 echo "  cd web && python3 -m http.server 8080"
 echo "Then open: http://localhost:8080"

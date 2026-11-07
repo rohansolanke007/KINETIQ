@@ -31,6 +31,50 @@ bool Vector2D::operator!=(const Vector2D& other) const {
     return !(*this == other);
 }
 
+Vector2D Vector2D::operator-() const {
+    return Vector2D(-x, -y);
+}
+
+Vector2D operator*(double scalar, const Vector2D& v) {
+    return Vector2D(v.x * scalar, v.y * scalar);
+}
+
+Vector2D& Vector2D::operator-=(const Vector2D& other) {
+    x -= other.x;
+    y -= other.y;
+    return *this;
+}
+
+Vector2D& Vector2D::operator*=(double scalar) {
+    x *= scalar;
+    y *= scalar;
+    return *this;
+}
+
+Vector2D& Vector2D::operator/=(double scalar) {
+    x /= scalar;
+    y /= scalar;
+    return *this;
+}
+
+double Vector2D::dot(const Vector2D& other) const {
+    return x * other.x + y * other.y;
+}
+
+double Vector2D::cross(const Vector2D& other) const {
+    return x * other.y - y * other.x;
+}
+
+double Vector2D::angle() const {
+    return std::atan2(y, x);
+}
+
+Vector2D Vector2D::rotated(double radians) const {
+    const double c = std::cos(radians);
+    const double s = std::sin(radians);
+    return Vector2D(x * c - y * s, x * s + y * c);
+}
+
 Vector2D& Vector2D::operator+=(const Vector2D& other) {
     x += other.x;
     y += other.y;

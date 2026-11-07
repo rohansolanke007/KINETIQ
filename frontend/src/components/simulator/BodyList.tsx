@@ -14,9 +14,14 @@ export function BodyList({
 }) {
   const objects = state?.objects ?? [];
   return (
-    <Panel title="BODIES" subtitle={`${objects.length} bodies in the simulation`}>
+    <Panel
+      title="Bodies"
+      subtitle={`${objects.length} ${objects.length === 1 ? "body" : "bodies"} in the simulation`}
+    >
       {objects.length === 0 ? (
-        <p className="text-[11px] text-muted-foreground">The world is empty. Add a body to begin.</p>
+        <p className="text-[13px] text-muted-foreground">
+          The world is empty. Add an object to begin.
+        </p>
       ) : (
         <div className="space-y-1.5">
           {objects.map((o) => (
@@ -33,11 +38,13 @@ export function BodyList({
             >
               <span
                 className="size-2 rounded-full"
-                style={{ backgroundColor: o.isStatic ? "var(--muted-foreground)" : shapeColor(o.shape) }}
+                style={{
+                  backgroundColor: o.isStatic ? "var(--muted-foreground)" : shapeColor(o.shape),
+                }}
               />
-              <span className="tech text-[11px]">#{o.id}</span>
+              <span className="tech text-[13px]">#{o.id}</span>
               <span className="label-micro flex-1 truncate">{o.shape}</span>
-              <span className="tech text-[10px] text-muted-foreground">
+              <span className="tech text-[12px] text-muted-foreground">
                 {fmt(speedOf(o.vel))} m/s
               </span>
             </button>
@@ -51,9 +58,11 @@ export function BodyList({
 export function CollisionPanel({ state }: { state: PhysicsState | null }) {
   const collisions = state?.recentCollisions ?? [];
   return (
-    <Panel title="COLLISIONS" subtitle={`${state?.stats.collisions ?? 0} total detected`}>
+    <Panel title="Contacts" subtitle={`${state?.stats.collisions ?? 0} collisions detected`}>
       {collisions.length === 0 ? (
-        <p className="text-[11px] text-muted-foreground">No contacts in the latest simulation step.</p>
+        <p className="text-[13px] text-muted-foreground">
+          No contacts in the latest simulation step.
+        </p>
       ) : (
         <div className="space-y-1.5">
           {collisions.map((c, i) => (
@@ -61,10 +70,10 @@ export function CollisionPanel({ state }: { state: PhysicsState | null }) {
               key={`${c.a}-${c.b}-${i}`}
               className="flex items-center justify-between rounded-md border border-red/30 bg-red/5 px-2.5 py-1.5"
             >
-              <span className="tech text-[11px]">
+              <span className="tech text-[13px]">
                 #{c.a} ↔ #{c.b}
               </span>
-              <span className="label-micro">pen {fmt(c.penetration, 3)}</span>
+              <span className="label-micro">overlap {fmt(c.penetration, 3)} m</span>
             </div>
           ))}
         </div>

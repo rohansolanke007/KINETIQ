@@ -39,6 +39,37 @@ namespace WebAPI {
     // JSON is transport only; it is not a recorded trace and the browser
     // never uses it to simulate physics.
     std::string getStateJSON();
+
+    // Coefficients of restitution (0..1): body-body collisions and walls.
+    // 1 conserves kinetic energy, 0 removes the normal-direction bounce.
+    void setRestitution(double e);
+    void setWallRestitution(double e);
+
+    // Energy and momentum of the sandbox, computed by the C++ engine:
+    // totals plus one entry per dynamic body. PE = m g y, measured from y = 0.
+    std::string getAnalysisJSON();
+    // Time series of the same totals (t, ke, pe, e, px, py, p), recorded at
+    // every step. maxRows = 0 returns everything.
+    std::string getAnalysisSeriesJSON(int maxRows);
+
+    // ---- Dedicated simulations (Simulation hierarchy) -------------
+    // Independent of the sandbox world above. Mutating calls return an
+    // empty string on success or a human readable error message, because
+    // C++ exceptions reach JavaScript only as opaque numbers.
+    std::string simCreate(const std::string& type);
+    void simDestroy();
+    std::string simSetParameter(const std::string& name, double value);
+    std::string simReset();
+    void simAdvance(double seconds);     // fixed-timestep driver
+    void simStepFrame();                 // one 1/60 s frame
+    std::string simStateJSON();          // "null" when nothing is selected
+    std::string simInfoJSON();
+    std::string simSeriesJSON(int maxRows);  // 0 = all rows
+    std::string simForcesJSON();             // free-body diagram of the active simulation
+
+    // Free-body diagram of one sandbox body: the gravity and friction forces
+    // the engine is applying to it right now. "null" for an unknown/static id.
+    std::string getBodyForcesJSON(int id);
 }
 
 #endif // WEB_API_H

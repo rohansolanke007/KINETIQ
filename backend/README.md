@@ -1,3 +1,7 @@
+> **Note:** this is the original engine README. For the full platform (dedicated simulations, free-body
+> diagrams, energy and momentum, tests and the web app), see the [root README](../README.md) and
+> [docs/WASM_API.md](../docs/WASM_API.md). Run `make test` here for the unit tests.
+
 # ⚙️ Mini Physics Engine
 
 ### Interactive 2D Physics Simulation Engine built in C++ and WebAssembly

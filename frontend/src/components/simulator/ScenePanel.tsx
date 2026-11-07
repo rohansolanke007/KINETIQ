@@ -1,11 +1,23 @@
 import { Panel } from "@/components/physics/ui";
 import { scenePresets } from "@/lib/physics/scenes";
+import { recordExplored } from "@/lib/progress";
 import type { Simulation } from "@/lib/physics/useSimulation";
+import { cn } from "@/lib/utils";
 
-export function ScenePanel({ sim }: { sim: Simulation }) {
+export function ScenePanel({
+  sim,
+  onLoaded,
+  activeId,
+  onActiveChange,
+}: {
+  sim: Simulation;
+  onLoaded: () => void;
+  activeId: string | null;
+  onActiveChange: (id: string) => void;
+}) {
   return (
-    <Panel title="SCENE PRESETS" subtitle="Each preset is ready to run">
-      <div className="space-y-2">
+    <Panel title="Scenes" subtitle="Ready-to-run setups built through the C++ API">
+      <div className="space-y-1.5">
         {scenePresets.map((preset) => (
           <button
             key={preset.id}
@@ -13,12 +25,28 @@ export function ScenePanel({ sim }: { sim: Simulation }) {
             disabled={sim.status !== "ready"}
             onClick={() => {
               sim.pause();
+              sim.clearHistory();
               sim.call((m) => preset.build(m));
+              onLoaded();
+              onActiveChange(preset.id);
+              recordExplored({
+                kind: "scene",
+                id: preset.id,
+                label: preset.name.charAt(0) + preset.name.slice(1).toLowerCase(),
+                href: `/lab?scene=${preset.id}`,
+              });
             }}
-            className="w-full rounded-md border border-border bg-background/40 px-3 py-2 text-left transition-all hover:border-primary/40 hover:bg-accent disabled:opacity-40"
+            className={cn(
+              "w-full rounded-md border px-3 py-2 text-left transition-colors disabled:opacity-40",
+              activeId === preset.id
+                ? "border-primary/50 bg-primary/10"
+                : "border-border bg-background/40 hover:border-primary/30 hover:bg-accent",
+            )}
           >
-            <div className="tech text-[10px] tracking-[0.14em] text-foreground">{preset.name}</div>
-            <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{preset.description}</p>
+            <div className="text-[13px] font-medium">
+              {preset.name.charAt(0) + preset.name.slice(1).toLowerCase()}
+            </div>
+            <p className="label-micro mt-0.5 leading-snug">{preset.description}</p>
           </button>
         ))}
       </div>

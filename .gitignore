@@ -24,3 +24,6 @@ frontend/.env.*
 
 # Local frontend backup
 frontend_backup/
+
+# Vercel build artifacts
+frontend/.vercel/

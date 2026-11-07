@@ -1,25 +1,31 @@
 #include "Force.h"
 #include "PhysicsObject.h"
 
+// ----------------------- Force (shared behaviour) -----------------------
+
+void Force::apply(PhysicsObject& obj) const {
+    const Vector2D f = forceOn(obj);
+    if (f.x != 0.0 || f.y != 0.0) obj.applyForce(f);
+}
+
 // ----------------------- GravityForce -----------------------
 
 GravityForce::GravityForce(double g) : g(g) {}
 
-void GravityForce::apply(PhysicsObject& obj) const {
-    if (obj.isStatic()) return; // gravity has no visible effect on immovable bodies
+Vector2D GravityForce::forceOn(const PhysicsObject& obj) const {
+    if (obj.isStatic()) return Vector2D(0.0, 0.0); // gravity has no visible effect on immovable bodies
     // Fg = m * g, acting downward (negative Y)
-    Vector2D gravityForce(0.0, -obj.getMass() * g);
-    obj.applyForce(gravityForce);
+    return Vector2D(0.0, -obj.getMass() * g);
 }
 
 // ----------------------- FrictionForce -----------------------
 
 FrictionForce::FrictionForce(double coefficient) : coefficient(coefficient) {}
 
-void FrictionForce::apply(PhysicsObject& obj) const {
-    if (obj.isStatic()) return;
+Vector2D FrictionForce::forceOn(const PhysicsObject& obj) const {
+    if (obj.isStatic()) return Vector2D(0.0, 0.0);
     Vector2D vel = obj.getVelocity();
-    if (vel.magnitude() < 1e-6) return; // nothing to oppose
+    if (vel.magnitude() < 1e-6) return Vector2D(0.0, 0.0); // nothing to oppose
 
     // Simplified kinetic friction model: a force opposing the direction
     // of motion, proportional to normal force (approximated as m*g)
@@ -28,15 +34,14 @@ void FrictionForce::apply(PhysicsObject& obj) const {
     // "mathematically understandable" scope of the project.
     const double gConst = 9.8;
     double frictionMag = coefficient * obj.getMass() * gConst;
-    Vector2D frictionForce = vel.normalized() * (-frictionMag);
-    obj.applyForce(frictionForce);
+    return vel.normalized() * (-frictionMag);
 }
 
 // ----------------------- AppliedForce -----------------------
 
 AppliedForce::AppliedForce(const Vector2D& force) : force(force) {}
 
-void AppliedForce::apply(PhysicsObject& obj) const {
-    if (obj.isStatic()) return;
-    obj.applyForce(force);
+Vector2D AppliedForce::forceOn(const PhysicsObject& obj) const {
+    if (obj.isStatic()) return Vector2D(0.0, 0.0);
+    return force;
 }

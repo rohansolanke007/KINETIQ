@@ -1,3 +1,4 @@
+import { Panel } from "@/components/physics/ui";
 import type { PhysicsState } from "@/lib/physics/engine";
 
 export function FormulaPanel({
@@ -7,119 +8,32 @@ export function FormulaPanel({
   state: PhysicsState | null;
   selectedId: number | null;
 }) {
-  if (!state) {
+  const dynamicObjects = (state?.objects ?? []).filter((o) => !o.isStatic);
+  const body =
+    selectedId !== null ? dynamicObjects.find((o) => o.id === selectedId) : dynamicObjects[0];
+
+  if (!state || !body) {
     return (
-      <div className="glass rounded-xl border border-border p-4">
-        <div className="label-micro">FORMULA & CALCULATION</div>
-        <p className="mt-2 text-[11px] text-muted-foreground">
-          Start the simulation to view live calculations.
+      <Panel title="Live calculation" subtitle="Kinetic energy">
+        <p className="text-[13px] text-muted-foreground">
+          Add a dynamic body to see its calculation.
         </p>
-      </div>
+      </Panel>
     );
   }
 
-  const dynamicObjects = state.objects.filter(
-    (object) => !object.isStatic,
-  );
-
-  const selectedObject =
-    selectedId !== null
-      ? dynamicObjects.find((object) => object.id === selectedId)
-      : dynamicObjects[0];
-
-  if (!selectedObject) {
-    return (
-      <div className="glass rounded-xl border border-border p-4">
-        <div className="label-micro">FORMULA & CALCULATION</div>
-        <p className="mt-2 text-[11px] text-muted-foreground">
-          Create a dynamic object to view its calculations.
-        </p>
-      </div>
-    );
-  }
-
-  const mass = selectedObject.mass;
-
-  const velocity = Math.hypot(
-    selectedObject.vel.x,
-    selectedObject.vel.y,
-  );
-
-  const kineticEnergy = 0.5 * mass * velocity * velocity;
+  const v = Math.hypot(body.vel.x, body.vel.y);
+  const ke = 0.5 * body.mass * v * v;
 
   return (
-    <div className="glass rounded-xl border border-border p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <div className="label-micro">FORMULA & CALCULATION</div>
-          <div className="mt-1 text-[10px] text-muted-foreground">
-            Body #{selectedObject.id}
-          </div>
+    <Panel title="Live calculation" subtitle={`Kinetic energy of body #${body.id}`}>
+      <div className="space-y-2 rounded-md border border-border bg-background/40 p-3 text-[13px]">
+        <div className="tech text-muted-foreground">KE = ½ m v²</div>
+        <div className="tech">
+          = ½ × {body.mass.toFixed(2)} kg × ({v.toFixed(2)} m/s)²
         </div>
-
-        <div className="tech text-[9px] text-muted-foreground">
-          LIVE
-        </div>
+        <div className="tech text-[15px] font-semibold text-primary">= {ke.toFixed(2)} J</div>
       </div>
-
-      <div className="space-y-4">
-        {/* Formula */}
-        <div>
-          <div className="mb-1 text-[9px] text-muted-foreground">
-            KINETIC ENERGY
-          </div>
-
-          <div className="rounded-md border border-border bg-background/40 px-3 py-2">
-            <div className="font-mono text-sm">
-              KE = ½mv²
-            </div>
-          </div>
-        </div>
-
-        {/* Variables */}
-        <div>
-          <div className="mb-2 text-[9px] text-muted-foreground">
-            VARIABLES
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-md border border-border bg-background/30 p-2">
-              <div className="text-[9px] text-muted-foreground">
-                MASS (m)
-              </div>
-              <div className="mt-1 font-mono text-xs">
-                {mass.toFixed(2)} kg
-              </div>
-            </div>
-
-            <div className="rounded-md border border-border bg-background/30 p-2">
-              <div className="text-[9px] text-muted-foreground">
-                VELOCITY (v)
-              </div>
-              <div className="mt-1 font-mono text-xs">
-                {velocity.toFixed(2)} m/s
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Calculation */}
-        <div>
-          <div className="mb-2 text-[9px] text-muted-foreground">
-            CALCULATION
-          </div>
-
-          <div className="rounded-md border border-border bg-background/30 p-3 font-mono text-[11px] leading-6">
-            <div>
-              KE = ½ × {mass.toFixed(2)} × ({velocity.toFixed(2)})²
-            </div>
-
-            <div className="font-semibold">
-              = {kineticEnergy.toFixed(2)} J
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </Panel>
   );
 }

@@ -1,6 +1,8 @@
 #include "WebAPI.h"
 #include "PhysicsEngine.h"
 #include "Exceptions.h"
+#include "SeriesRecorder.h"
+#include "SimulationManager.h"
 #include <iomanip>
 #include <sstream>
 #include <memory>
@@ -13,6 +15,55 @@
 namespace {
     // The browser owns one long-lived simulation instance.
     PhysicsEngine engine(Vector2D(0.0, 0.0), Vector2D(100.0, 60.0), 0.05);
+
+    // Recording of the sandbox totals (energy, momentum) for graphs and export.
+    SeriesRecorder sandboxRecorder({"t", "ke", "pe", "e", "px", "py", "p"},
+                                   {"s", "J", "J", "J", "kg\xC2\xB7m/s", "kg\xC2\xB7m/s", "kg\xC2\xB7m/s"}, 6000, 0.01);
+    double lastRecordedTime = -1.0;
+
+    struct SandboxTotals {
+        double kinetic = 0.0, potential = 0.0, px = 0.0, py = 0.0;
+    };
+
+    // Sums over the dynamic bodies. Potential energy is m g (y - yFloor).
+    SandboxTotals sandboxTotals(const World& world, std::ostringstream* bodies) {
+        SandboxTotals t;
+        const double g = world.hasGravity() ? world.getGravity() : 0.0;
+        const double floorY = world.getBoundaryMin().y;
+        bool first = true;
+        for (const auto& pair : world.getObjects().getAll()) {
+            const PhysicsObject* obj = pair.second.get();
+            if (obj->isStatic()) continue;
+            const double m = obj->getMass();
+            const Vector2D v = obj->getVelocity();
+            const double ke = 0.5 * m * (v.x * v.x + v.y * v.y);
+            const double pe = m * g * (obj->getPosition().y - floorY);
+            t.kinetic += ke;
+            t.potential += pe;
+            t.px += m * v.x;
+            t.py += m * v.y;
+            if (bodies) {
+                if (!first) *bodies << ",";
+                first = false;
+                *bodies << "{\"id\":" << obj->getId() << ",\"mass\":" << m << ",\"kinetic\":" << ke
+                        << ",\"potential\":" << pe << ",\"px\":" << m * v.x << ",\"py\":" << m * v.y << "}";
+            }
+        }
+        return t;
+    }
+
+    void recordSandbox() {
+        const World& world = engine.getWorld();
+        const double now = world.getSimulationTime();
+        if (now < lastRecordedTime) sandboxRecorder.clear(); // undo or reset moved time backwards
+        lastRecordedTime = now;
+        const SandboxTotals t = sandboxTotals(world, nullptr);
+        sandboxRecorder.push(now, {now, t.kinetic, t.potential, t.kinetic + t.potential, t.px, t.py,
+                                   std::hypot(t.px, t.py)});
+    }
+
+    // The dedicated-simulation manager (separate from the sandbox engine).
+    SimulationManager simulations;
 
     void ensureFinite(double value, const char* name) {
         if (!std::isfinite(value)) {
@@ -49,6 +100,8 @@ namespace {
 namespace WebAPI {
 
 void reset() {
+    sandboxRecorder.clear();
+    lastRecordedTime = -1.0;
     engine.getWorld().reset();
     engine.setTimeStep(0.05);
     engine.resume();
@@ -142,10 +195,38 @@ void applyImpulse(int id, double fx, double fy) {
 
 void step(int count) {
     if (count < 0) throw InvalidSimulationException("Step count cannot be negative.");
-    engine.runSteps(count);
+    // One step at a time so every step's energy and momentum is recorded.
+    for (int i = 0; i < count; ++i) {
+        if (engine.runSteps(1) > 0) recordSandbox();
+    }
 }
 
-bool undo() { return engine.getWorld().undo(); }
+bool undo() {
+    const bool ok = engine.getWorld().undo();
+    if (ok) recordSandbox();
+    return ok;
+}
+
+void setRestitution(double e) { engine.getWorld().setRestitution(e); }
+void setWallRestitution(double e) { engine.getWorld().setWallRestitution(e); }
+
+std::string getAnalysisJSON() {
+    const World& world = engine.getWorld();
+    std::ostringstream bodies;
+    bodies << std::setprecision(10);
+    const SandboxTotals t = sandboxTotals(world, &bodies);
+    std::ostringstream out;
+    out << std::setprecision(10);
+    out << "{\"time\":" << world.getSimulationTime() << ",\"kinetic\":" << t.kinetic
+        << ",\"potential\":" << t.potential << ",\"mechanical\":" << t.kinetic + t.potential
+        << ",\"momentum\":{\"x\":" << t.px << ",\"y\":" << t.py << ",\"magnitude\":" << std::hypot(t.px, t.py)
+        << "},\"bodies\":[" << bodies.str() << "]}";
+    return out.str();
+}
+
+std::string getAnalysisSeriesJSON(int maxRows) {
+    return sandboxRecorder.toJSON(maxRows > 0 ? static_cast<std::size_t>(maxRows) : 0);
+}
 
 std::string getStateJSON() {
     std::ostringstream out;
@@ -160,6 +241,8 @@ std::string getStateJSON() {
         << ",\"friction\":" << world.getFriction()
         << ",\"gravityEnabled\":" << (world.hasGravity() ? "true" : "false")
         << ",\"frictionEnabled\":" << (world.hasFriction() ? "true" : "false")
+        << ",\"restitution\":" << world.getRestitution()
+        << ",\"wallRestitution\":" << world.getWallRestitution()
         << ",\"boundaryMin\":{\"x\":" << world.getBoundaryMin().x << ",\"y\":" << world.getBoundaryMin().y << "}"
         << ",\"boundaryMax\":{\"x\":" << world.getBoundaryMax().x << ",\"y\":" << world.getBoundaryMax().y << "}"
         << ",\"stats\":{\"objects\":" << stats.objectCount
@@ -205,6 +288,71 @@ std::string getStateJSON() {
 
 } // namespace WebAPI
 
+namespace WebAPI {
+std::string getBodyForcesJSON(int id) {
+    const std::vector<ForceVector> list = engine.getWorld().forcesOn(id);
+    if (list.empty()) return "null";
+    FreeBodyDiagram diagram;
+    for (const ForceVector& f : list) diagram.add(f);
+    return diagram.toJSON();
+}
+} // namespace WebAPI
+
+// ---- Dedicated simulations -------------------------------------------
+// Each wrapper converts C++ exceptions into messages the UI can show.
+namespace WebAPI {
+
+std::string simCreate(const std::string& type) {
+    try {
+        simulations.select(type);
+        return "";
+    } catch (const std::exception& e) {
+        return e.what();
+    }
+}
+
+void simDestroy() { simulations.clear(); }
+
+std::string simSetParameter(const std::string& name, double value) {
+    try {
+        simulations.active().setParameter(name, value);
+        return "";
+    } catch (const std::exception& e) {
+        return e.what();
+    }
+}
+
+std::string simReset() {
+    try {
+        simulations.active().reset();
+        return "";
+    } catch (const std::exception& e) {
+        return e.what();
+    }
+}
+
+void simAdvance(double seconds) {
+    if (simulations.hasActive()) simulations.active().advance(seconds);
+}
+
+void simStepFrame() {
+    if (simulations.hasActive()) simulations.active().stepFrame();
+}
+
+std::string simStateJSON() { return simulations.hasActive() ? simulations.active().stateJSON() : "null"; }
+std::string simInfoJSON() { return simulations.hasActive() ? simulations.active().infoJSON() : "null"; }
+std::string simSeriesJSON(int maxRows) {
+    return simulations.hasActive()
+               ? simulations.active().seriesJSON(maxRows > 0 ? static_cast<std::size_t>(maxRows) : 0)
+               : "null";
+}
+
+std::string simForcesJSON() {
+    return simulations.hasActive() ? simulations.active().forcesJSON() : "null";
+}
+
+} // namespace WebAPI
+
 #ifdef __EMSCRIPTEN__
 EMSCRIPTEN_BINDINGS(mini_physics_engine) {
     using namespace emscripten;
@@ -228,5 +376,20 @@ EMSCRIPTEN_BINDINGS(mini_physics_engine) {
     function("step", &WebAPI::step, allow_raw_pointers());
     function("undo", &WebAPI::undo);
     function("getStateJSON", &WebAPI::getStateJSON);
+    function("setRestitution", &WebAPI::setRestitution);
+    function("setWallRestitution", &WebAPI::setWallRestitution);
+    function("getAnalysisJSON", &WebAPI::getAnalysisJSON);
+    function("getAnalysisSeriesJSON", &WebAPI::getAnalysisSeriesJSON);
+    function("simCreate", &WebAPI::simCreate);
+    function("simDestroy", &WebAPI::simDestroy);
+    function("simSetParameter", &WebAPI::simSetParameter);
+    function("simReset", &WebAPI::simReset);
+    function("simAdvance", &WebAPI::simAdvance);
+    function("simStepFrame", &WebAPI::simStepFrame);
+    function("simStateJSON", &WebAPI::simStateJSON);
+    function("simInfoJSON", &WebAPI::simInfoJSON);
+    function("simSeriesJSON", &WebAPI::simSeriesJSON);
+    function("simForcesJSON", &WebAPI::simForcesJSON);
+    function("getBodyForcesJSON", &WebAPI::getBodyForcesJSON);
 }
 #endif

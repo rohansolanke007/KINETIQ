@@ -41,8 +41,20 @@ struct Collision {
 // ----------------------------------------------------------------
 class CollisionManager {
 public:
+    static constexpr double kDefaultRestitution = 0.6;
+
     std::vector<Collision> detectCollisions(const ObjectManager<PhysicsObject>& objects);
+
+    // Coefficient of restitution e = (speed of separation) / (speed of approach),
+    // measured along the collision normal. e = 1 is perfectly elastic (kinetic
+    // energy kept), e = 0 is perfectly inelastic (the bodies end with the same
+    // velocity along the normal).
+    double getRestitution() const { return restitution_; }
+    void setRestitution(double e);
     void resolveCollisions(ObjectManager<PhysicsObject>& objects, const std::vector<Collision>& collisions);
+
+private:
+    double restitution_ = kDefaultRestitution;
 };
 
 #endif // COLLISION_H

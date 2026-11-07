@@ -46,6 +46,7 @@ private:
     double simulationTime = 0.0;
     Vector2D boundaryMin;
     Vector2D boundaryMax;
+    double wallRestitution = 0.7; // fraction of speed kept when bouncing off a wall
 
 public:
     World(const Vector2D& boundaryMin, const Vector2D& boundaryMax);
@@ -54,8 +55,19 @@ public:
     bool removeObject(int id);
     PhysicsObject* findObject(int id);
 
+    // The continuous forces (gravity, friction) currently acting on one body,
+    // read from the same Force objects step() applies. Empty if id is unknown.
+    std::vector<ForceVector> forcesOn(int id);
+
     void setGravity(double g);
     void disableGravity();
+    // Coefficient of restitution for body-body collisions and for walls.
+    // Both are 0..1; 1 conserves kinetic energy, lower values dissipate it.
+    void setRestitution(double e) { collisionManager.setRestitution(e); }
+    double getRestitution() const { return collisionManager.getRestitution(); }
+    void setWallRestitution(double e);
+    double getWallRestitution() const { return wallRestitution; }
+
     void setFriction(double coefficient);
     void disableFriction();
 

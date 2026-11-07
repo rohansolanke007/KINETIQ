@@ -13,7 +13,8 @@
 //   - Encapsulation (x, y kept simple/public here since Vector2D is
 //     treated as a lightweight math "value type", similar to how
 //     the standard library treats std::complex)
-//   - Operator overloading (+, -, *, /, ==, <<, >>)
+//   - Operator overloading (+, -, unary -, *, /, +=, -=, *=, /=,
+//     scalar * v, ==, !=, <<, >>)
 //   - Friend functions (for stream operators)
 // ----------------------------------------------------------------
 class Vector2D {
@@ -30,7 +31,20 @@ public:
     bool     operator==(const Vector2D& other) const;
     bool     operator!=(const Vector2D& other) const;
 
+    Vector2D operator-() const;                // unary minus: -v
+
     Vector2D& operator+=(const Vector2D& other);
+    Vector2D& operator-=(const Vector2D& other);
+    Vector2D& operator*=(double scalar);
+    Vector2D& operator/=(double scalar);
+
+    // scalar * Vector2D (the commutative partner of operator*)
+    friend Vector2D operator*(double scalar, const Vector2D& v);
+
+    double dot(const Vector2D& other) const;   // a . b
+    double cross(const Vector2D& other) const; // z-component of a x b
+    double angle() const;                      // direction in radians, atan2(y, x)
+    Vector2D rotated(double radians) const;    // counter-clockwise rotation
 
     double magnitude() const;
     double magnitudeSquared() const;

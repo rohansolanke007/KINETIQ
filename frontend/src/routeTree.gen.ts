@@ -10,18 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as FeedbackRouteImport } from './routes/feedback'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as ConceptsRouteImport } from './routes/concepts'
+import { Route as ExperimentsRouteImport } from './routes/experiments'
 import { Route as FormulasRouteImport } from './routes/formulas'
+import { Route as LabRouteImport } from './routes/lab'
 import { Route as LawsRouteImport } from './routes/laws'
+import { Route as ExperimentsExperimentIdRouteImport } from './routes/experiments_.$experimentId'
+import { Route as ExperimentsLawsRouteImport } from './routes/experiments_.laws'
+import { Route as LabCollisionRouteImport } from './routes/lab_.collision'
+import { Route as LabInclineRouteImport } from './routes/lab_.incline'
+import { Route as LabPendulumRouteImport } from './routes/lab_.pendulum'
+import { Route as LabProjectileRouteImport } from './routes/lab_.projectile'
+import { Route as LabShmRouteImport } from './routes/lab_.shm'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FeedbackRoute = FeedbackRouteImport.update({
-  id: '/feedback',
-  path: '/feedback',
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConceptsRoute = ConceptsRouteImport.update({
+  id: '/concepts',
+  path: '/concepts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExperimentsRoute = ExperimentsRouteImport.update({
+  id: '/experiments',
+  path: '/experiments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormulasRoute = FormulasRouteImport.update({
@@ -29,44 +55,174 @@ const FormulasRoute = FormulasRouteImport.update({
   path: '/formulas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabRoute = LabRouteImport.update({
+  id: '/lab',
+  path: '/lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LawsRoute = LawsRouteImport.update({
   id: '/laws',
   path: '/laws',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExperimentsExperimentIdRoute = ExperimentsExperimentIdRouteImport.update({
+  id: '/experiments_/$experimentId',
+  path: '/experiments/$experimentId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExperimentsLawsRoute = ExperimentsLawsRouteImport.update({
+  id: '/experiments_/laws',
+  path: '/experiments/laws',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabCollisionRoute = LabCollisionRouteImport.update({
+  id: '/lab_/collision',
+  path: '/lab/collision',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabInclineRoute = LabInclineRouteImport.update({
+  id: '/lab_/incline',
+  path: '/lab/incline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabPendulumRoute = LabPendulumRouteImport.update({
+  id: '/lab_/pendulum',
+  path: '/lab/pendulum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabProjectileRoute = LabProjectileRouteImport.update({
+  id: '/lab_/projectile',
+  path: '/lab/projectile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabShmRoute = LabShmRouteImport.update({
+  id: '/lab_/shm',
+  path: '/lab/shm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/feedback': typeof FeedbackRoute
+  '/about': typeof AboutRoute
+  '/analytics': typeof AnalyticsRoute
+  '/concepts': typeof ConceptsRoute
+  '/experiments': typeof ExperimentsRoute
   '/formulas': typeof FormulasRoute
+  '/lab': typeof LabRoute
   '/laws': typeof LawsRoute
+  '/experiments/$experimentId': typeof ExperimentsExperimentIdRoute
+  '/experiments/laws': typeof ExperimentsLawsRoute
+  '/lab/collision': typeof LabCollisionRoute
+  '/lab/incline': typeof LabInclineRoute
+  '/lab/pendulum': typeof LabPendulumRoute
+  '/lab/projectile': typeof LabProjectileRoute
+  '/lab/shm': typeof LabShmRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/feedback': typeof FeedbackRoute
+  '/about': typeof AboutRoute
+  '/analytics': typeof AnalyticsRoute
+  '/concepts': typeof ConceptsRoute
+  '/experiments': typeof ExperimentsRoute
   '/formulas': typeof FormulasRoute
+  '/lab': typeof LabRoute
   '/laws': typeof LawsRoute
+  '/experiments/$experimentId': typeof ExperimentsExperimentIdRoute
+  '/experiments/laws': typeof ExperimentsLawsRoute
+  '/lab/collision': typeof LabCollisionRoute
+  '/lab/incline': typeof LabInclineRoute
+  '/lab/pendulum': typeof LabPendulumRoute
+  '/lab/projectile': typeof LabProjectileRoute
+  '/lab/shm': typeof LabShmRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/feedback': typeof FeedbackRoute
+  '/about': typeof AboutRoute
+  '/analytics': typeof AnalyticsRoute
+  '/concepts': typeof ConceptsRoute
+  '/experiments': typeof ExperimentsRoute
   '/formulas': typeof FormulasRoute
+  '/lab': typeof LabRoute
   '/laws': typeof LawsRoute
+  '/experiments_/$experimentId': typeof ExperimentsExperimentIdRoute
+  '/experiments_/laws': typeof ExperimentsLawsRoute
+  '/lab_/collision': typeof LabCollisionRoute
+  '/lab_/incline': typeof LabInclineRoute
+  '/lab_/pendulum': typeof LabPendulumRoute
+  '/lab_/projectile': typeof LabProjectileRoute
+  '/lab_/shm': typeof LabShmRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feedback' | '/formulas' | '/laws'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/analytics'
+    | '/concepts'
+    | '/experiments'
+    | '/formulas'
+    | '/lab'
+    | '/laws'
+    | '/experiments/$experimentId'
+    | '/experiments/laws'
+    | '/lab/collision'
+    | '/lab/incline'
+    | '/lab/pendulum'
+    | '/lab/projectile'
+    | '/lab/shm'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feedback' | '/formulas' | '/laws'
-  id: '__root__' | '/' | '/feedback' | '/formulas' | '/laws'
+  to:
+    | '/'
+    | '/about'
+    | '/analytics'
+    | '/concepts'
+    | '/experiments'
+    | '/formulas'
+    | '/lab'
+    | '/laws'
+    | '/experiments/$experimentId'
+    | '/experiments/laws'
+    | '/lab/collision'
+    | '/lab/incline'
+    | '/lab/pendulum'
+    | '/lab/projectile'
+    | '/lab/shm'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/analytics'
+    | '/concepts'
+    | '/experiments'
+    | '/formulas'
+    | '/lab'
+    | '/laws'
+    | '/experiments_/$experimentId'
+    | '/experiments_/laws'
+    | '/lab_/collision'
+    | '/lab_/incline'
+    | '/lab_/pendulum'
+    | '/lab_/projectile'
+    | '/lab_/shm'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  FeedbackRoute: typeof FeedbackRoute
+  AboutRoute: typeof AboutRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  ConceptsRoute: typeof ConceptsRoute
+  ExperimentsRoute: typeof ExperimentsRoute
   FormulasRoute: typeof FormulasRoute
+  LabRoute: typeof LabRoute
   LawsRoute: typeof LawsRoute
+  ExperimentsExperimentIdRoute: typeof ExperimentsExperimentIdRoute
+  ExperimentsLawsRoute: typeof ExperimentsLawsRoute
+  LabCollisionRoute: typeof LabCollisionRoute
+  LabInclineRoute: typeof LabInclineRoute
+  LabPendulumRoute: typeof LabPendulumRoute
+  LabProjectileRoute: typeof LabProjectileRoute
+  LabShmRoute: typeof LabShmRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -78,11 +234,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/feedback': {
-      id: '/feedback'
-      path: '/feedback'
-      fullPath: '/feedback'
-      preLoaderRoute: typeof FeedbackRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concepts': {
+      id: '/concepts'
+      path: '/concepts'
+      fullPath: '/concepts'
+      preLoaderRoute: typeof ConceptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/experiments': {
+      id: '/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof ExperimentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/formulas': {
@@ -92,6 +269,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormulasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab': {
+      id: '/lab'
+      path: '/lab'
+      fullPath: '/lab'
+      preLoaderRoute: typeof LabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/laws': {
       id: '/laws'
       path: '/laws'
@@ -99,14 +283,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LawsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/experiments_/$experimentId': {
+      id: '/experiments_/$experimentId'
+      path: '/experiments/$experimentId'
+      fullPath: '/experiments/$experimentId'
+      preLoaderRoute: typeof ExperimentsExperimentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/experiments_/laws': {
+      id: '/experiments_/laws'
+      path: '/experiments/laws'
+      fullPath: '/experiments/laws'
+      preLoaderRoute: typeof ExperimentsLawsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab_/collision': {
+      id: '/lab_/collision'
+      path: '/lab/collision'
+      fullPath: '/lab/collision'
+      preLoaderRoute: typeof LabCollisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab_/incline': {
+      id: '/lab_/incline'
+      path: '/lab/incline'
+      fullPath: '/lab/incline'
+      preLoaderRoute: typeof LabInclineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab_/pendulum': {
+      id: '/lab_/pendulum'
+      path: '/lab/pendulum'
+      fullPath: '/lab/pendulum'
+      preLoaderRoute: typeof LabPendulumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab_/projectile': {
+      id: '/lab_/projectile'
+      path: '/lab/projectile'
+      fullPath: '/lab/projectile'
+      preLoaderRoute: typeof LabProjectileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab_/shm': {
+      id: '/lab_/shm'
+      path: '/lab/shm'
+      fullPath: '/lab/shm'
+      preLoaderRoute: typeof LabShmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  FeedbackRoute: FeedbackRoute,
+  AboutRoute: AboutRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  ConceptsRoute: ConceptsRoute,
+  ExperimentsRoute: ExperimentsRoute,
   FormulasRoute: FormulasRoute,
+  LabRoute: LabRoute,
   LawsRoute: LawsRoute,
+  ExperimentsExperimentIdRoute: ExperimentsExperimentIdRoute,
+  ExperimentsLawsRoute: ExperimentsLawsRoute,
+  LabCollisionRoute: LabCollisionRoute,
+  LabInclineRoute: LabInclineRoute,
+  LabPendulumRoute: LabPendulumRoute,
+  LabProjectileRoute: LabProjectileRoute,
+  LabShmRoute: LabShmRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

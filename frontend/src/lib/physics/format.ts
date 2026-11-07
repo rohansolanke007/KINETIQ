@@ -6,7 +6,7 @@ export const speedOf = (v: { x: number; y: number }) => Math.hypot(v.x, v.y);
 export const shapeColor = (shape: string) => {
   switch (shape) {
     case "Circle":
-      return "var(--amber)";
+      return "var(--cyan)";
     case "Rectangle":
       return "var(--blue)";
     case "Triangle":

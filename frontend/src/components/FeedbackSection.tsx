@@ -1,21 +1,16 @@
 
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import { Panel } from "@/components/physics/ui";
 
-export const Route = createFileRoute("/feedback")({
-  component: FeedbackPage,
-});
-
-function FeedbackPage() {
+export function FeedbackSection() {
   const [rating, setRating] = useState(0);
   const [category, setCategory] = useState("Suggestion");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (rating < 1 || rating > 5) {
@@ -31,28 +26,29 @@ function FeedbackPage() {
     setSubmitting(true);
     setStatus("");
 
-    const { error } = await supabase.from("feedback").insert({
-      rating,
-      category,
-      message: message.trim(),
-    });
+    try {
+      const { error } = await supabase.from("feedback").insert({
+        rating,
+        category,
+        message: message.trim(),
+      });
 
-    setSubmitting(false);
+      if (error) throw error;
 
-    if (error) {
+      setStatus("Thank you! Your feedback has been submitted.");
+      setRating(0);
+      setCategory("Suggestion");
+      setMessage("");
+    } catch (error) {
       console.error("Feedback submission failed:", error);
       setStatus("Feedback could not be submitted. Please try again.");
-      return;
+    } finally {
+      setSubmitting(false);
     }
-
-    setStatus("Thank you! Your feedback has been submitted.");
-    setRating(0);
-    setCategory("Suggestion");
-    setMessage("");
   };
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 p-4 sm:p-6">
+    <section aria-labelledby="feedback-heading">
       <Panel
         title="SHARE YOUR FEEDBACK"
         subtitle="HELP US IMPROVE KINETIQ"
@@ -80,6 +76,7 @@ function FeedbackPage() {
                   ★
                 </button>
               ))}
+
               <span className="self-center text-xs text-muted-foreground">
                 {rating ? `${rating}/5` : "Select a rating"}
               </span>
@@ -93,6 +90,7 @@ function FeedbackPage() {
             >
               Feedback category
             </label>
+
             <select
               id="feedback-category"
               value={category}
@@ -113,6 +111,7 @@ function FeedbackPage() {
             >
               Your message
             </label>
+
             <textarea
               id="feedback-message"
               value={message}
@@ -124,6 +123,7 @@ function FeedbackPage() {
               rows={6}
               className="w-full resize-y rounded-md border border-border bg-background px-3 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
             />
+
             <p className="mt-1 text-right text-xs text-muted-foreground">
               {message.length}/2000
             </p>
@@ -144,6 +144,7 @@ function FeedbackPage() {
           )}
         </form>
       </Panel>
-    </main>
+    </section>
   );
 }
+

@@ -1,61 +1,67 @@
-import { useEffect, useState } from "react";
-import { ActionButton, Field, NumberInput, Panel } from "@/components/physics/ui";
+import { Panel, SliderField } from "@/components/physics/ui";
 import type { Simulation } from "@/lib/physics/useSimulation";
 
+/** Global environment. Sliders are controlled by the C++ world's own values. */
 export function WorldPanel({ sim }: { sim: Simulation }) {
   const state = sim.state;
-  const [gravity, setGravity] = useState(9.8);
-  const [friction, setFriction] = useState(0.2);
-  const [timeStep, setTimeStep] = useState(0.05);
-
-  useEffect(() => {
-    if (!state) return;
-    setGravity(state.gravity);
-    setFriction(state.friction);
-    setTimeStep(state.timeStep);
-    // Only sync once the engine reports its initial world configuration.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.gravity, state?.friction, state?.timeStep]);
-
   const disabled = sim.status !== "ready";
+  const gravity = state?.gravityEnabled ? state.gravity : 0;
+  const friction = state?.frictionEnabled ? state.friction : 0;
 
   return (
-    <Panel title="WORLD FORCES" subtitle="Configure forces and simulation parameters">
-      <div className="space-y-3">
-        <Field label="GRAVITY" suffix={state?.gravityEnabled ? "enabled" : "disabled"}>
-          <NumberInput value={gravity} onChange={setGravity} step={0.1} />
-        </Field>
-        <div className="grid grid-cols-2 gap-2">
-          <ActionButton disabled={disabled} onClick={() => sim.call((m) => m.setGravity(gravity))}>
-            APPLY
-          </ActionButton>
-          <ActionButton disabled={disabled} onClick={() => sim.call((m) => m.disableGravity())}>
-            DISABLE
-          </ActionButton>
-        </div>
-
-        <Field label="FRICTION" suffix={state?.frictionEnabled ? "enabled" : "disabled"}>
-          <NumberInput value={friction} onChange={setFriction} step={0.05} min={0} max={1} />
-        </Field>
-        <div className="grid grid-cols-2 gap-2">
-          <ActionButton disabled={disabled} onClick={() => sim.call((m) => m.setFriction(friction))}>
-            APPLY
-          </ActionButton>
-          <ActionButton disabled={disabled} onClick={() => sim.call((m) => m.disableFriction())}>
-            DISABLE
-          </ActionButton>
-        </div>
-
-        <Field label="TIME STEP" suffix="s">
-          <NumberInput value={timeStep} onChange={setTimeStep} step={0.005} min={0.001} />
-        </Field>
-        <ActionButton
-          className="w-full"
+    <Panel title="Environment" subtitle="Applied by the C++ engine immediately">
+      <div className="space-y-4">
+        <SliderField
+          label="Gravity"
+          unit="m/s²"
+          min={0}
+          max={25}
+          step={0.1}
+          value={Number(gravity.toFixed(2))}
           disabled={disabled}
-          onClick={() => sim.call((m) => m.setTimeStep(timeStep))}
-        >
-          SET Δt
-        </ActionButton>
+          onChange={(g) => sim.call((m) => (g <= 0 ? m.disableGravity() : m.setGravity(g)))}
+        />
+        <SliderField
+          label="Friction coefficient μ"
+          min={0}
+          max={1}
+          step={0.01}
+          value={Number(friction.toFixed(2))}
+          disabled={disabled}
+          onChange={(mu) => sim.call((m) => (mu <= 0 ? m.disableFriction() : m.setFriction(mu)))}
+        />
+        <SliderField
+          label="Time step Δt"
+          unit="s"
+          min={0.005}
+          max={0.1}
+          step={0.005}
+          value={Number((state?.timeStep ?? 0.05).toFixed(3))}
+          disabled={disabled}
+          onChange={(dt) => sim.call((m) => m.setTimeStep(dt))}
+        />
+        <SliderField
+          label="Collision restitution e"
+          min={0}
+          max={1}
+          step={0.01}
+          value={Number((state?.restitution ?? 0.6).toFixed(2))}
+          disabled={disabled}
+          onChange={(e) => sim.call((m) => m.setRestitution(e))}
+        />
+        <SliderField
+          label="Wall restitution"
+          min={0}
+          max={1}
+          step={0.01}
+          value={Number((state?.wallRestitution ?? 0.7).toFixed(2))}
+          disabled={disabled}
+          onChange={(e) => sim.call((m) => m.setWallRestitution(e))}
+        />
+        <p className="label-micro leading-relaxed">
+          e = 1 bounces perfectly (kinetic energy kept); e = 0 removes the bounce. Friction opposes
+          a body's velocity with a force μ·m·g. Gravity at 0 turns it off.
+        </p>
       </div>
     </Panel>
   );

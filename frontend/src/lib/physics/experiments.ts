@@ -33,17 +33,14 @@ export interface Experiment {
   calculation: (state: PhysicsState | null) => Calculation;
 }
 
-const dyn = (s: PhysicsState | null) =>
-  (s?.objects ?? []).filter((o) => !o.isStatic);
+const dyn = (s: PhysicsState | null) => (s?.objects ?? []).filter((o) => !o.isStatic);
 
-const byIndex = (s: PhysicsState | null, i: number) =>
-  dyn(s)[i] ?? null;
+const byIndex = (s: PhysicsState | null, i: number) => dyn(s)[i] ?? null;
 
 const momentumTotal = (s: PhysicsState | null) =>
   dyn(s).reduce((sum, o) => sum + o.mass * o.vel.x, 0);
 
-const floor = (m: PhysicsModule) =>
-  m.createRectangle(true, 1, 50, 2, 96, 4, 0, 0);
+const floor = (m: PhysicsModule) => m.createRectangle(true, 1, 50, 2, 96, 4, 0, 0);
 
 export const experiments: Experiment[] = [
   {
@@ -51,8 +48,7 @@ export const experiments: Experiment[] = [
     law: "NEWTON'S FIRST LAW",
     name: "INERTIA",
     formula: "ΣF = 0  ⇒  v = constant",
-    description:
-      "With gravity and friction switched off, a body keeps its velocity forever.",
+    description: "With gravity and friction switched off, a body keeps its velocity forever.",
     explanation:
       "Both bodies are released with different speeds and no forces act on them. The C++ engine keeps each velocity unchanged, so the separation grows linearly with time.",
 
@@ -70,16 +66,12 @@ export const experiments: Experiment[] = [
     readouts: (s) => [
       {
         label: "BODY A SPEED",
-        value: fmt(
-          speedOf(byIndex(s, 0)?.vel ?? { x: 0, y: 0 })
-        ),
+        value: fmt(speedOf(byIndex(s, 0)?.vel ?? { x: 0, y: 0 })),
         unit: "m/s",
       },
       {
         label: "BODY B SPEED",
-        value: fmt(
-          speedOf(byIndex(s, 1)?.vel ?? { x: 0, y: 0 })
-        ),
+        value: fmt(speedOf(byIndex(s, 1)?.vel ?? { x: 0, y: 0 })),
         unit: "m/s",
       },
       {
@@ -90,9 +82,7 @@ export const experiments: Experiment[] = [
     ],
 
     calculation: (s) => {
-      const v = speedOf(
-        byIndex(s, 0)?.vel ?? { x: 0, y: 0 }
-      );
+      const v = speedOf(byIndex(s, 0)?.vel ?? { x: 0, y: 0 });
 
       return {
         formula: "ΣF = 0  ⇒  v = constant",
@@ -124,8 +114,7 @@ export const experiments: Experiment[] = [
     law: "NEWTON'S SECOND LAW",
     name: "FORCE, MASS, ACCELERATION",
     formula: "F = m · a",
-    description:
-      "Identical impulses on different masses produce different accelerations.",
+    description: "Identical impulses on different masses produce different accelerations.",
     explanation:
       "Three bodies of 1, 4 and 10 kg sit in a gravity-free world. Run the experiment and apply the same impulse to each: the lighter mass gains the most speed, exactly as F = m·a predicts.",
 
@@ -195,8 +184,7 @@ export const experiments: Experiment[] = [
     law: "NEWTON'S THIRD LAW",
     name: "ACTION & REACTION",
     formula: "F₁₂ = −F₂₁",
-    description:
-      "Two bodies collide head-on and push each other apart.",
+    description: "Two bodies collide head-on and push each other apart.",
     explanation:
       "The C++ collision response applies equal and opposite impulses. Total momentum along x stays constant while each body reverses.",
 
@@ -275,8 +263,7 @@ export const experiments: Experiment[] = [
     law: "UNIFORM GRAVITY",
     name: "FREE FALL",
     formula: "a = g,  y = y₀ − ½gt²",
-    description:
-      "Different masses fall with the same acceleration.",
+    description: "Different masses fall with the same acceleration.",
     explanation:
       "Gravity is set to 9.8 m/s². The engine gives every mass the same downward acceleration, so the three bodies stay level as they fall.",
 
@@ -355,10 +342,8 @@ export const experiments: Experiment[] = [
     id: "projectile",
     law: "PROJECTILE MOTION",
     name: "PARABOLIC TRAJECTORY",
-    formula:
-      "x = v₀cosθ·t,  y = v₀sinθ·t − ½gt²",
-    description:
-      "A launched body traces a parabola under constant gravity.",
+    formula: "x = v₀cosθ·t,  y = v₀sinθ·t − ½gt²",
+    description: "A launched body traces a parabola under constant gravity.",
     explanation:
       "Horizontal velocity stays constant while vertical velocity is changed by gravity in the C++ integrator, producing the classic parabola.",
 
@@ -408,8 +393,7 @@ export const experiments: Experiment[] = [
       const y = 6 + vy * t - 0.5 * 9.8 * t ** 2;
 
       return {
-        formula:
-          "x = v₀ₓt   |   y = y₀ + v₀ᵧt − ½gt²",
+        formula: "x = v₀ₓt   |   y = y₀ + v₀ᵧt − ½gt²",
 
         variables: [
           {
@@ -449,10 +433,8 @@ export const experiments: Experiment[] = [
     id: "momentum",
     law: "CONSERVATION OF MOMENTUM",
     name: "UNEQUAL MASS IMPACT",
-    formula:
-      "m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂",
-    description:
-      "A fast light body strikes a slow heavy body.",
+    formula: "m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂",
+    description: "A fast light body strikes a slow heavy body.",
     explanation:
       "Watch the total momentum readout: the C++ collision solver redistributes velocity between the bodies but the sum stays essentially unchanged.",
 
@@ -499,8 +481,7 @@ export const experiments: Experiment[] = [
       const finalMomentum = momentumTotal(s);
 
       return {
-        formula:
-          "m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂",
+        formula: "m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂",
 
         variables: [
           {
@@ -541,8 +522,7 @@ export const experiments: Experiment[] = [
     law: "KINETIC ENERGY",
     name: "ENERGY & SPEED",
     formula: "KE = ½mv²",
-    description:
-      "Energy grows with the square of speed, not linearly.",
+    description: "Energy grows with the square of speed, not linearly.",
     explanation:
       "Three equal masses travel at 4, 8 and 12 m/s. The engine's kinetic energy total shows the quadratic relationship immediately.",
 
@@ -561,9 +541,7 @@ export const experiments: Experiment[] = [
     readouts: (s) =>
       dyn(s).map((o) => ({
         label: `v = ${fmt(speedOf(o.vel), 1)} m/s · KE`,
-        value: fmt(
-          0.5 * o.mass * speedOf(o.vel) ** 2
-        ),
+        value: fmt(0.5 * o.mass * speedOf(o.vel) ** 2),
         unit: "J",
       })),
 
@@ -571,9 +549,7 @@ export const experiments: Experiment[] = [
       const body = byIndex(s, 0);
 
       const mass = body?.mass ?? 2;
-      const velocity = speedOf(
-        body?.vel ?? { x: 4, y: 0 }
-      );
+      const velocity = speedOf(body?.vel ?? { x: 4, y: 0 });
 
       const ke = 0.5 * mass * velocity ** 2;
 
@@ -607,8 +583,7 @@ export const experiments: Experiment[] = [
     law: "KINETIC FRICTION",
     name: "SLIDING & STOPPING",
     formula: "f = μ · N",
-    description:
-      "Sliding blocks lose speed to the engine's friction model.",
+    description: "Sliding blocks lose speed to the engine's friction model.",
     explanation:
       "Two blocks start at the same speed with friction enabled at μ = 0.3. Their speeds decay until they come to rest.",
 
@@ -632,20 +607,12 @@ export const experiments: Experiment[] = [
       },
       {
         label: "BLOCK A SPEED",
-        value: fmt(
-          speedOf(
-            byIndex(s, 0)?.vel ?? { x: 0, y: 0 }
-          )
-        ),
+        value: fmt(speedOf(byIndex(s, 0)?.vel ?? { x: 0, y: 0 })),
         unit: "m/s",
       },
       {
         label: "BLOCK B SPEED",
-        value: fmt(
-          speedOf(
-            byIndex(s, 1)?.vel ?? { x: 0, y: 0 }
-          )
-        ),
+        value: fmt(speedOf(byIndex(s, 1)?.vel ?? { x: 0, y: 0 })),
         unit: "m/s",
       },
     ],
@@ -694,8 +661,7 @@ export const experiments: Experiment[] = [
     law: "IMPULSE–MOMENTUM THEOREM",
     name: "IMPULSE CHANGES MOMENTUM",
     formula: "J = Δp = m·Δv",
-    description:
-      "A single impulse instantly changes a body's momentum.",
+    description: "A single impulse instantly changes a body's momentum.",
     explanation:
       "The body starts at rest. Use APPLY IMPULSE in the inspector or run the experiment: momentum jumps by exactly the impulse delivered by the C++ engine.",
 
@@ -704,15 +670,7 @@ export const experiments: Experiment[] = [
       m.disableGravity();
       m.disableFriction();
 
-      const id = m.createCircle(
-        false,
-        5,
-        20,
-        30,
-        3,
-        0,
-        0
-      );
+      const id = m.createCircle(false, 5, 20, 30, 3, 0, 0);
 
       m.applyImpulse(id, 30, 10);
       m.pause();
@@ -732,8 +690,8 @@ export const experiments: Experiment[] = [
               byIndex(s, 0)?.vel ?? {
                 x: 0,
                 y: 0,
-              }
-            )
+              },
+            ),
         ),
         unit: "kg·m/s",
       },
@@ -744,8 +702,8 @@ export const experiments: Experiment[] = [
             byIndex(s, 0)?.vel ?? {
               x: 0,
               y: 0,
-            }
-          )
+            },
+          ),
         ),
         unit: "m/s",
       },
@@ -755,9 +713,7 @@ export const experiments: Experiment[] = [
       const body = byIndex(s, 0);
 
       const mass = body?.mass ?? 5;
-      const speed = speedOf(
-        body?.vel ?? { x: 0, y: 0 }
-      );
+      const speed = speedOf(body?.vel ?? { x: 0, y: 0 });
 
       const momentum = mass * speed;
 
@@ -797,8 +753,7 @@ export const experiments: Experiment[] = [
     law: "MULTI-BODY COLLISIONS",
     name: "COLLISION CHAIN",
     formula: "Σp = constant",
-    description:
-      "One moving body transfers motion through a line of resting bodies.",
+    description: "One moving body transfers motion through a line of resting bodies.",
     explanation:
       "A row of equal spheres is struck from the left. The engine resolves each contact in turn and momentum travels along the chain.",
 
@@ -810,15 +765,7 @@ export const experiments: Experiment[] = [
       m.createCircle(false, 3, 10, 30, 2.4, 18, 0);
 
       for (let i = 0; i < 4; i++) {
-        m.createCircle(
-          false,
-          3,
-          45 + i * 5.2,
-          30,
-          2.4,
-          0,
-          0
-        );
+        m.createCircle(false, 3, 45 + i * 5.2, 30, 2.4, 0, 0);
       }
 
       m.pause();

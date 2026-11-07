@@ -1,4 +1,5 @@
 #include "World.h"
+#include <cmath>
 #include "Exceptions.h"
 #include "MathUtils.h"
 #include <algorithm>
@@ -16,6 +17,20 @@ bool World::removeObject(int id) {
 
 PhysicsObject* World::findObject(int id) {
     return objects.find(id);
+}
+
+std::vector<ForceVector> World::forcesOn(int id) {
+    std::vector<ForceVector> result;
+    const PhysicsObject* obj = objects.find(id);
+    if (!obj || obj->isStatic()) return result;
+    if (gravity) {
+        result.push_back({"Weight", "W = mg", gravity->kind(), gravity->forceOn(*obj), false});
+    }
+    if (friction) {
+        const Vector2D f = friction->forceOn(*obj);
+        if (f.magnitude() > 0.0) result.push_back({"Friction", "f = \xCE\xBC" "mg", friction->kind(), f, false});
+    }
+    return result;
 }
 
 void World::setGravity(double g) {
@@ -93,8 +108,15 @@ void World::reset() {
     PhysicsObject::resetIdCounter();
 }
 
+void World::setWallRestitution(double e) {
+    if (!std::isfinite(e) || e < 0.0 || e > 1.0) {
+        throw InvalidSimulationException("Wall restitution must be between 0 and 1.");
+    }
+    wallRestitution = e;
+}
+
 void World::enforceBoundaries() {
-    const double damping = 0.7; // energy lost when bouncing off a wall
+    const double damping = wallRestitution; // fraction of speed kept after hitting a wall
 
     for (auto& pair : objects.getAll()) {
         PhysicsObject* obj = pair.second.get();
