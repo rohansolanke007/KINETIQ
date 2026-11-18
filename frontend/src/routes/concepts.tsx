@@ -715,6 +715,281 @@ const FORMULA_CATEGORIES: FormulaCategory[] = [
       },
     ],
   },
+
+  {
+    name: "CIRCULAR MOTION",
+    description:
+      "Angular and tangential quantities, centripetal acceleration, period and frequency.",
+    formulas: [
+      {
+        id: "circ-1",
+        name: "Angular Displacement",
+        formula: "θ = s / r",
+        explanation:
+          "Angular displacement θ is the angle through which a point has rotated about a fixed axis. It equals the arc length s divided by the radius r of the circular path. The result is in radians, which are dimensionless ratios of length.",
+        physicalMeaning:
+          "One radian is the angle subtended at the centre of a circle when the arc length equals the radius. For a full revolution, θ = 2π rad (≈ 6.28 rad). Angular displacement accumulates over time as the object continues to rotate.",
+        whenToUse:
+          "Use θ = s/r to convert between arc length and angle when the radius is known, or to calculate how far along the arc a particle has travelled given its angular position.",
+        variables: [
+          { symbol: "θ", meaning: "Angular displacement", unit: "rad", dimension: "1" },
+          { symbol: "s", meaning: "Arc length", unit: "m", dimension: "L" },
+          { symbol: "r", meaning: "Radius of circular path", unit: "m", dimension: "L" },
+        ],
+        dimensions: "1 (dimensionless)",
+        siUnit: "rad",
+      },
+      {
+        id: "circ-2",
+        name: "Angular Velocity",
+        formula: "ω = Δθ / Δt",
+        explanation:
+          "Angular velocity ω is the rate of change of angular displacement with respect to time. For uniform circular motion, ω = v / r, where v is the constant tangential speed and r is the radius.",
+        physicalMeaning:
+          "Angular velocity describes how fast an object is rotating. A larger ω means more revolutions per second. The sign of ω indicates direction: positive for counterclockwise and negative for clockwise by convention.",
+        whenToUse:
+          "Use ω = Δθ/Δt for the average angular velocity over a time interval. Use ω = v/r when tangential speed and radius are given. For uniform circular motion these two forms give identical results.",
+        variables: [
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+          { symbol: "Δθ", meaning: "Change in angular displacement", unit: "rad", dimension: "1" },
+          { symbol: "Δt", meaning: "Time interval", unit: "s", dimension: "T" },
+          { symbol: "v", meaning: "Tangential speed", unit: "m/s", dimension: "LT⁻¹" },
+          { symbol: "r", meaning: "Radius", unit: "m", dimension: "L" },
+        ],
+        dimensions: "T⁻¹",
+        siUnit: "rad/s",
+      },
+      {
+        id: "circ-3",
+        name: "Tangential Velocity",
+        formula: "v = rω",
+        explanation:
+          "The tangential velocity of a point on a rotating body is the product of the radius and the angular velocity. It is directed perpendicular to the radius at every instant.",
+        physicalMeaning:
+          "Even at constant angular velocity, every point on a rotating object has a fixed tangential speed that depends on its distance from the axis. Points farther from the axis move faster.",
+        whenToUse:
+          "Use v = rω to find the linear speed of any point in a rotating system when its distance from the axis and the angular velocity are known.",
+        variables: [
+          { symbol: "v", meaning: "Tangential speed", unit: "m/s", dimension: "LT⁻¹" },
+          { symbol: "r", meaning: "Radius", unit: "m", dimension: "L" },
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+        ],
+        dimensions: "LT⁻¹",
+        siUnit: "m/s",
+      },
+      {
+        id: "circ-4",
+        name: "Centripetal Acceleration",
+        formula: "aₒ = v² / r = rω²",
+        explanation:
+          "Centripetal acceleration is directed toward the centre of the circular path at every instant. It is not a change in speed but a change in direction of velocity. For uniform circular motion, its magnitude is v²/r or equivalently rω².",
+        physicalMeaning:
+          "Without centripetal acceleration, an object would travel in a straight line. The centripetal acceleration continuously redirects the velocity vector, keeping the particle on its circular path. Greater speed or a smaller radius requires larger centripetal acceleration.",
+        whenToUse:
+          "Use aₒ = v²/r when tangential speed and radius are known. Use aₒ = rω² when angular velocity and radius are known. The two are equivalent for uniform circular motion.",
+        variables: [
+          { symbol: "aₒ", meaning: "Centripetal acceleration", unit: "m/s²", dimension: "LT⁻²" },
+          { symbol: "v", meaning: "Tangential speed", unit: "m/s", dimension: "LT⁻¹" },
+          { symbol: "r", meaning: "Radius", unit: "m", dimension: "L" },
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+        ],
+        dimensions: "LT⁻²",
+        siUnit: "m/s²",
+      },
+      {
+        id: "circ-5",
+        name: "Centripetal Force",
+        formula: "Fc = mv² / r = mrω²",
+        explanation:
+          "Centripetal force is the net inward force required to maintain circular motion. It is provided by physical forces such as tension, friction, gravity or a normal reaction — not a separate type of force.",
+        physicalMeaning:
+          "The centripetal force is always directed toward the centre of the circular path. Removing it causes the object to leave the circle and travel in a straight line tangent to its path at the moment of release.",
+        whenToUse:
+          "Use Fc = mv²/r or Fc = mrω² to calculate the net inward force needed for circular motion. Identify what real force (or component of a force) is providing this centripetal requirement in a given problem.",
+        variables: [
+          { symbol: "Fc", meaning: "Centripetal force", unit: "N", dimension: "MLT⁻²" },
+          { symbol: "m", meaning: "Mass", unit: "kg", dimension: "M" },
+          { symbol: "v", meaning: "Tangential speed", unit: "m/s", dimension: "LT⁻¹" },
+          { symbol: "r", meaning: "Radius", unit: "m", dimension: "L" },
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+        ],
+        dimensions: "MLT⁻²",
+        siUnit: "N (newton)",
+      },
+      {
+        id: "circ-6",
+        name: "Period and Frequency",
+        formula: "T = 2π / ω     f = 1 / T",
+        explanation:
+          "The period T is the time taken for one complete revolution. The frequency f is the number of complete revolutions per second. They are reciprocals of each other. Both can be expressed in terms of angular velocity ω.",
+        physicalMeaning:
+          "Period and frequency are complementary descriptions of the same rotation rate. A short period means rapid rotation and high frequency. The angular velocity ω = 2πf = 2π/T links all three quantities.",
+        whenToUse:
+          "Use T = 2π/ω when angular velocity is known and you need the time for one complete revolution. Use f = 1/T to convert between period and frequency. Use ω = 2πf when frequency is given.",
+        variables: [
+          { symbol: "T", meaning: "Period", unit: "s", dimension: "T" },
+          { symbol: "f", meaning: "Frequency", unit: "Hz", dimension: "T⁻¹" },
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+        ],
+        dimensions: "T / T⁻¹",
+        siUnit: "s / Hz",
+      },
+      {
+        id: "circ-7",
+        name: "Angular Acceleration",
+        formula: "α = Δω / Δt",
+        explanation:
+          "Angular acceleration α is the rate of change of angular velocity with time. It arises in non-uniform circular motion where the speed along the circular path is changing. For constant angular acceleration, the kinematic equations ω = ω₀ + αt and θ = θ₀ + ω₀t + ½αt² apply.",
+        physicalMeaning:
+          "Angular acceleration indicates how quickly the rotation rate is speeding up or slowing down. When α is positive and ω is positive, the body spins faster. When they have opposite signs, the rotation slows.",
+        whenToUse:
+          "Use α = Δω/Δt when you need the average angular acceleration over a time interval. Use the kinematic equations for constant-angular-acceleration problems, analogous to the linear kinematic equations.",
+        variables: [
+          { symbol: "α", meaning: "Angular acceleration", unit: "rad/s²", dimension: "T⁻²" },
+          { symbol: "Δω", meaning: "Change in angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+          { symbol: "Δt", meaning: "Time interval", unit: "s", dimension: "T" },
+        ],
+        dimensions: "T⁻²",
+        siUnit: "rad/s²",
+      },
+    ],
+  },
+
+  {
+    name: "ROTATIONAL DYNAMICS",
+    description:
+      "Torque, moment of inertia, angular momentum, rotational energy and Newton's second law for rotation.",
+    formulas: [
+      {
+        id: "rot-1",
+        name: "Torque",
+        formula: "τ = rF sin θ",
+        explanation:
+          "Torque τ is the rotational equivalent of force. It depends on the magnitude of the applied force F, the distance r from the axis of rotation to the point of application, and the sine of the angle θ between the position vector and the force vector.",
+        physicalMeaning:
+          "Only the component of force perpendicular to the lever arm contributes to torque. When θ = 90°, the full force contributes; when θ = 0° or 180°, the torque is zero. Torque is the cause of angular acceleration.",
+        whenToUse:
+          "Use τ = rF sin θ whenever a force is applied at a distance from an axis. When the force is applied perpendicular to the lever arm, sin θ = 1 and τ = rF. This is the most common situation in simple problems.",
+        variables: [
+          { symbol: "τ", meaning: "Torque", unit: "N·m", dimension: "ML²T⁻²" },
+          { symbol: "r", meaning: "Distance from axis to point of application", unit: "m", dimension: "L" },
+          { symbol: "F", meaning: "Applied force magnitude", unit: "N", dimension: "MLT⁻²" },
+          { symbol: "θ", meaning: "Angle between r and F", unit: "rad", dimension: "1" },
+        ],
+        dimensions: "ML²T⁻²",
+        siUnit: "N·m (newton-metre)",
+      },
+      {
+        id: "rot-2",
+        name: "Newton's Second Law for Rotation",
+        formula: "τ_net = Iα",
+        explanation:
+          "The net torque acting on a rigid body equals the product of its moment of inertia and its angular acceleration. This is the rotational analogue of F = ma for linear motion.",
+        physicalMeaning:
+          "A greater net torque produces a greater angular acceleration. For a fixed torque, a body with a larger moment of inertia accelerates more slowly. The moment of inertia plays the role of mass in rotational dynamics.",
+        whenToUse:
+          "Use τ_net = Iα to find angular acceleration when net torque and moment of inertia are known, or to find the torque required for a desired angular acceleration. This applies to fixed-axis rotation with constant I.",
+        variables: [
+          { symbol: "τ_net", meaning: "Net torque", unit: "N·m", dimension: "ML²T⁻²" },
+          { symbol: "I", meaning: "Moment of inertia", unit: "kg·m²", dimension: "ML²" },
+          { symbol: "α", meaning: "Angular acceleration", unit: "rad/s²", dimension: "T⁻²" },
+        ],
+        dimensions: "ML²T⁻²",
+        siUnit: "N·m",
+      },
+      {
+        id: "rot-3",
+        name: "Moment of Inertia",
+        formula: "I = Σ mᵢrᵢ²",
+        explanation:
+          "The moment of inertia is the rotational analogue of mass. It is a measure of how difficult it is to angularly accelerate a body about a given axis. For standard shapes, closed-form expressions exist: I = ½MR² for a solid disc, I = MR² for a thin ring, and so on.",
+        physicalMeaning:
+          "Mass closer to the rotation axis contributes less to the moment of inertia than mass farther away (because of the r² factor). This is why a figure skater pulls their arms in to spin faster — they reduce their moment of inertia, and conservation of angular momentum increases their spin rate.",
+        whenToUse:
+          "Use the standard formulae for uniform solid shapes. For compound objects, add the moments of inertia of the individual parts. Use the parallel-axis theorem I = I_cm + Md² when the axis does not pass through the centre of mass.",
+        variables: [
+          { symbol: "I", meaning: "Moment of inertia", unit: "kg·m²", dimension: "ML²" },
+          { symbol: "M", meaning: "Total mass of body", unit: "kg", dimension: "M" },
+          { symbol: "R", meaning: "Characteristic radius", unit: "m", dimension: "L" },
+          { symbol: "r", meaning: "Distance of mass element from axis", unit: "m", dimension: "L" },
+        ],
+        dimensions: "ML²",
+        siUnit: "kg·m²",
+      },
+      {
+        id: "rot-4",
+        name: "Angular Momentum",
+        formula: "L = Iω",
+        explanation:
+          "Angular momentum L is the rotational analogue of linear momentum. For a rigid body rotating about a fixed axis, it equals the product of the moment of inertia and the angular velocity. It is conserved when the net external torque is zero.",
+        physicalMeaning:
+          "Conservation of angular momentum explains why spinning tops maintain their orientation, why a diver tucks to rotate faster, and how planets orbiting the sun obey Kepler's second law.",
+        whenToUse:
+          "Use L = Iω to calculate angular momentum. Use the conservation law L_i = L_f when the net external torque on a system is zero over a time interval — especially useful for analysing interactions between rotating bodies.",
+        variables: [
+          { symbol: "L", meaning: "Angular momentum", unit: "kg·m²/s", dimension: "ML²T⁻¹" },
+          { symbol: "I", meaning: "Moment of inertia", unit: "kg·m²", dimension: "ML²" },
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+        ],
+        dimensions: "ML²T⁻¹",
+        siUnit: "kg·m²/s",
+      },
+      {
+        id: "rot-5",
+        name: "Rotational Kinetic Energy",
+        formula: "KE_rot = ½Iω²",
+        explanation:
+          "A rotating rigid body has kinetic energy by virtue of its rotation. The rotational kinetic energy is analogous to the translational kinetic energy ½mv², with I replacing m and ω replacing v.",
+        physicalMeaning:
+          "For a body that both translates and rotates (such as a rolling wheel), the total kinetic energy is the sum of translational and rotational kinetic energies: KE = ½mv² + ½Iω². The rolling constraint then links v and ω.",
+        whenToUse:
+          "Use KE_rot = ½Iω² for bodies rotating about a fixed axis. For rolling-without-slipping problems, combine with the translational kinetic energy. Use energy methods when force and acceleration are hard to find directly.",
+        variables: [
+          { symbol: "KE_rot", meaning: "Rotational kinetic energy", unit: "J", dimension: "ML²T⁻²" },
+          { symbol: "I", meaning: "Moment of inertia", unit: "kg·m²", dimension: "ML²" },
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+        ],
+        dimensions: "ML²T⁻²",
+        siUnit: "J (joule)",
+      },
+      {
+        id: "rot-6",
+        name: "Work Done by Torque",
+        formula: "W = τθ",
+        explanation:
+          "When a constant torque τ acts through an angular displacement θ, the work done is their product. This is the rotational analogue of W = Fd for a constant linear force.",
+        physicalMeaning:
+          "Only the component of torque aligned with the rotation axis does work. The work-energy theorem for rotation states that the net work done by all torques equals the change in rotational kinetic energy: W = ΔKE_rot.",
+        whenToUse:
+          "Use W = τθ for a constant torque. For a variable torque, integrate torque over the angular displacement. Combine with the work-energy theorem to solve problems where forces and accelerations are not needed explicitly.",
+        variables: [
+          { symbol: "W", meaning: "Work done by torque", unit: "J", dimension: "ML²T⁻²" },
+          { symbol: "τ", meaning: "Constant net torque", unit: "N·m", dimension: "ML²T⁻²" },
+          { symbol: "θ", meaning: "Angular displacement", unit: "rad", dimension: "1" },
+        ],
+        dimensions: "ML²T⁻²",
+        siUnit: "J (joule)",
+      },
+      {
+        id: "rot-7",
+        name: "Rotational Power",
+        formula: "P = τω",
+        explanation:
+          "Rotational power is the rate at which a torque does work. For a constant torque and constant angular velocity, the instantaneous power is the product of torque and angular velocity.",
+        physicalMeaning:
+          "Rotational power is the rotational equivalent of P = Fv for translational power. An engine delivering a fixed power can produce a large torque at low speed or a small torque at high speed.",
+        whenToUse:
+          "Use P = τω to find the mechanical power delivered by a rotating shaft. This is especially useful in engineering applications involving motors, turbines and gearboxes.",
+        variables: [
+          { symbol: "P", meaning: "Rotational power", unit: "W", dimension: "ML²T⁻³" },
+          { symbol: "τ", meaning: "Torque", unit: "N·m", dimension: "ML²T⁻²" },
+          { symbol: "ω", meaning: "Angular velocity", unit: "rad/s", dimension: "T⁻¹" },
+        ],
+        dimensions: "ML²T⁻³",
+        siUnit: "W (watt)",
+      },
+    ],
+  },
 ];
 
 function FormulaLibraryPage() {

@@ -1,21 +1,27 @@
 #include "SimulationManager.h"
 #include "Exceptions.h"
+#include "CircularMotionSimulation.h"
 #include "CollisionSimulation.h"
 #include "InclinedPlaneSimulation.h"
 #include "PendulumSimulation.h"
 #include "ProjectileSimulation.h"
+#include "RotationalDynamicsSimulation.h"
 #include "SHMSimulation.h"
 
 std::unique_ptr<Simulation> SimulationFactory::create(const std::string& type) {
-    if (type == "projectile") return std::unique_ptr<Simulation>(new ProjectileSimulation());
-    if (type == "collision") return std::unique_ptr<Simulation>(new CollisionSimulation());
-    if (type == "incline") return std::unique_ptr<Simulation>(new InclinedPlaneSimulation());
-    if (type == "pendulum") return std::unique_ptr<Simulation>(new PendulumSimulation());
-    if (type == "shm") return std::unique_ptr<Simulation>(new SHMSimulation());
+    if (type == "projectile")  return std::unique_ptr<Simulation>(new ProjectileSimulation());
+    if (type == "collision")   return std::unique_ptr<Simulation>(new CollisionSimulation());
+    if (type == "incline")     return std::unique_ptr<Simulation>(new InclinedPlaneSimulation());
+    if (type == "pendulum")    return std::unique_ptr<Simulation>(new PendulumSimulation());
+    if (type == "shm")         return std::unique_ptr<Simulation>(new SHMSimulation());
+    if (type == "circular")    return std::unique_ptr<Simulation>(new CircularMotionSimulation());
+    if (type == "rotational")  return std::unique_ptr<Simulation>(new RotationalDynamicsSimulation());
     throw InvalidSimulationException("unknown simulation type '" + type + "'.");
 }
 
-std::vector<std::string> SimulationFactory::availableTypes() { return {"projectile", "pendulum", "shm", "incline", "collision"}; }
+std::vector<std::string> SimulationFactory::availableTypes() {
+    return {"projectile", "pendulum", "shm", "incline", "collision", "circular", "rotational"};
+}
 
 void SimulationManager::select(const std::string& type) { active_ = SimulationFactory::create(type); }
 

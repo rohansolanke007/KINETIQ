@@ -18,6 +18,7 @@ em++ \
   -Wall -Wextra \
   -Iinclude \
   src/Collision.cpp \
+  src/CircularMotionSimulation.cpp \
   src/CollisionSimulation.cpp \
   src/Force.cpp \
   src/FreeBodyDiagram.cpp \
@@ -26,6 +27,7 @@ em++ \
   src/PhysicsEngine.cpp \
   src/PhysicsObject.cpp \
   src/ProjectileSimulation.cpp \
+  src/RotationalDynamicsSimulation.cpp \
   src/SeriesRecorder.cpp \
   src/SHMSimulation.cpp \
   src/Shape.cpp \

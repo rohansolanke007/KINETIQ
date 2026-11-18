@@ -19,10 +19,12 @@ import { Route as LabRouteImport } from './routes/lab'
 import { Route as LawsRouteImport } from './routes/laws'
 import { Route as ExperimentsExperimentIdRouteImport } from './routes/experiments_.$experimentId'
 import { Route as ExperimentsLawsRouteImport } from './routes/experiments_.laws'
+import { Route as LabCircularRouteImport } from './routes/lab_.circular'
 import { Route as LabCollisionRouteImport } from './routes/lab_.collision'
 import { Route as LabInclineRouteImport } from './routes/lab_.incline'
 import { Route as LabPendulumRouteImport } from './routes/lab_.pendulum'
 import { Route as LabProjectileRouteImport } from './routes/lab_.projectile'
+import { Route as LabRotationalRouteImport } from './routes/lab_.rotational'
 import { Route as LabShmRouteImport } from './routes/lab_.shm'
 
 const IndexRoute = IndexRouteImport.update({
@@ -75,6 +77,11 @@ const ExperimentsLawsRoute = ExperimentsLawsRouteImport.update({
   path: '/experiments/laws',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabCircularRoute = LabCircularRouteImport.update({
+  id: '/lab_/circular',
+  path: '/lab/circular',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabCollisionRoute = LabCollisionRouteImport.update({
   id: '/lab_/collision',
   path: '/lab/collision',
@@ -95,6 +102,11 @@ const LabProjectileRoute = LabProjectileRouteImport.update({
   path: '/lab/projectile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabRotationalRoute = LabRotationalRouteImport.update({
+  id: '/lab_/rotational',
+  path: '/lab/rotational',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabShmRoute = LabShmRouteImport.update({
   id: '/lab_/shm',
   path: '/lab/shm',
@@ -112,10 +124,12 @@ export interface FileRoutesByFullPath {
   '/laws': typeof LawsRoute
   '/experiments/$experimentId': typeof ExperimentsExperimentIdRoute
   '/experiments/laws': typeof ExperimentsLawsRoute
+  '/lab/circular': typeof LabCircularRoute
   '/lab/collision': typeof LabCollisionRoute
   '/lab/incline': typeof LabInclineRoute
   '/lab/pendulum': typeof LabPendulumRoute
   '/lab/projectile': typeof LabProjectileRoute
+  '/lab/rotational': typeof LabRotationalRoute
   '/lab/shm': typeof LabShmRoute
 }
 export interface FileRoutesByTo {
@@ -129,10 +143,12 @@ export interface FileRoutesByTo {
   '/laws': typeof LawsRoute
   '/experiments/$experimentId': typeof ExperimentsExperimentIdRoute
   '/experiments/laws': typeof ExperimentsLawsRoute
+  '/lab/circular': typeof LabCircularRoute
   '/lab/collision': typeof LabCollisionRoute
   '/lab/incline': typeof LabInclineRoute
   '/lab/pendulum': typeof LabPendulumRoute
   '/lab/projectile': typeof LabProjectileRoute
+  '/lab/rotational': typeof LabRotationalRoute
   '/lab/shm': typeof LabShmRoute
 }
 export interface FileRoutesById {
@@ -147,10 +163,12 @@ export interface FileRoutesById {
   '/laws': typeof LawsRoute
   '/experiments_/$experimentId': typeof ExperimentsExperimentIdRoute
   '/experiments_/laws': typeof ExperimentsLawsRoute
+  '/lab_/circular': typeof LabCircularRoute
   '/lab_/collision': typeof LabCollisionRoute
   '/lab_/incline': typeof LabInclineRoute
   '/lab_/pendulum': typeof LabPendulumRoute
   '/lab_/projectile': typeof LabProjectileRoute
+  '/lab_/rotational': typeof LabRotationalRoute
   '/lab_/shm': typeof LabShmRoute
 }
 export interface FileRouteTypes {
@@ -166,10 +184,12 @@ export interface FileRouteTypes {
     | '/laws'
     | '/experiments/$experimentId'
     | '/experiments/laws'
+    | '/lab/circular'
     | '/lab/collision'
     | '/lab/incline'
     | '/lab/pendulum'
     | '/lab/projectile'
+    | '/lab/rotational'
     | '/lab/shm'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -183,10 +203,12 @@ export interface FileRouteTypes {
     | '/laws'
     | '/experiments/$experimentId'
     | '/experiments/laws'
+    | '/lab/circular'
     | '/lab/collision'
     | '/lab/incline'
     | '/lab/pendulum'
     | '/lab/projectile'
+    | '/lab/rotational'
     | '/lab/shm'
   id:
     | '__root__'
@@ -200,10 +222,12 @@ export interface FileRouteTypes {
     | '/laws'
     | '/experiments_/$experimentId'
     | '/experiments_/laws'
+    | '/lab_/circular'
     | '/lab_/collision'
     | '/lab_/incline'
     | '/lab_/pendulum'
     | '/lab_/projectile'
+    | '/lab_/rotational'
     | '/lab_/shm'
   fileRoutesById: FileRoutesById
 }
@@ -218,10 +242,12 @@ export interface RootRouteChildren {
   LawsRoute: typeof LawsRoute
   ExperimentsExperimentIdRoute: typeof ExperimentsExperimentIdRoute
   ExperimentsLawsRoute: typeof ExperimentsLawsRoute
+  LabCircularRoute: typeof LabCircularRoute
   LabCollisionRoute: typeof LabCollisionRoute
   LabInclineRoute: typeof LabInclineRoute
   LabPendulumRoute: typeof LabPendulumRoute
   LabProjectileRoute: typeof LabProjectileRoute
+  LabRotationalRoute: typeof LabRotationalRoute
   LabShmRoute: typeof LabShmRoute
 }
 
@@ -297,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExperimentsLawsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab_/circular': {
+      id: '/lab_/circular'
+      path: '/lab/circular'
+      fullPath: '/lab/circular'
+      preLoaderRoute: typeof LabCircularRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab_/collision': {
       id: '/lab_/collision'
       path: '/lab/collision'
@@ -325,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LabProjectileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab_/rotational': {
+      id: '/lab_/rotational'
+      path: '/lab/rotational'
+      fullPath: '/lab/rotational'
+      preLoaderRoute: typeof LabRotationalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab_/shm': {
       id: '/lab_/shm'
       path: '/lab/shm'
@@ -346,10 +386,12 @@ const rootRouteChildren: RootRouteChildren = {
   LawsRoute: LawsRoute,
   ExperimentsExperimentIdRoute: ExperimentsExperimentIdRoute,
   ExperimentsLawsRoute: ExperimentsLawsRoute,
+  LabCircularRoute: LabCircularRoute,
   LabCollisionRoute: LabCollisionRoute,
   LabInclineRoute: LabInclineRoute,
   LabPendulumRoute: LabPendulumRoute,
   LabProjectileRoute: LabProjectileRoute,
+  LabRotationalRoute: LabRotationalRoute,
   LabShmRoute: LabShmRoute,
 }
 export const routeTree = rootRouteImport

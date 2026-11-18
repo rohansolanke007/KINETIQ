@@ -22,6 +22,8 @@ export interface ConceptArea {
     | "/lab/pendulum"
     | "/lab/incline"
     | "/lab/collision"
+    | "/lab/circular"
+    | "/lab/rotational"
     | "/experiments"
     | "/experiments/laws"
     | "/concepts";
@@ -52,9 +54,16 @@ export const conceptAreas: ConceptArea[] = [
   {
     id: "circular",
     name: "Circular motion",
-    description: "Centripetal force, angular velocity and orbital paths.",
-    status: "planned",
-    to: "/concepts",
+    description: "Centripetal force, angular velocity and orbital paths — live C++ simulation.",
+    status: "available",
+    to: "/lab/circular",
+  },
+  {
+    id: "rotational",
+    name: "Rotational dynamics",
+    description: "Torque, moment of inertia, angular momentum and rotational kinetic energy.",
+    status: "available",
+    to: "/lab/rotational",
   },
   {
     id: "energy-momentum",
@@ -70,16 +79,26 @@ export const conceptAreas: ConceptArea[] = [
 export interface SimulationModule {
   id: string;
   label: string;
-  to: "/lab" | "/lab/projectile" | "/lab/shm" | "/lab/pendulum" | "/lab/incline" | "/lab/collision";
+  to:
+    | "/lab"
+    | "/lab/projectile"
+    | "/lab/shm"
+    | "/lab/pendulum"
+    | "/lab/incline"
+    | "/lab/collision"
+    | "/lab/circular"
+    | "/lab/rotational";
 }
 
 export const simulationModules: SimulationModule[] = [
-  { id: "sandbox", label: "Sandbox", to: "/lab" },
-  { id: "projectile", label: "Projectile motion", to: "/lab/projectile" },
-  { id: "shm", label: "Spring-mass (SHM)", to: "/lab/shm" },
-  { id: "pendulum", label: "Pendulum", to: "/lab/pendulum" },
-  { id: "incline", label: "Inclined plane", to: "/lab/incline" },
-  { id: "collision", label: "Collisions", to: "/lab/collision" },
+  { id: "sandbox",     label: "Sandbox",             to: "/lab" },
+  { id: "projectile",  label: "Projectile motion",   to: "/lab/projectile" },
+  { id: "shm",         label: "Spring-mass (SHM)",   to: "/lab/shm" },
+  { id: "pendulum",    label: "Pendulum",             to: "/lab/pendulum" },
+  { id: "incline",     label: "Inclined plane",       to: "/lab/incline" },
+  { id: "collision",   label: "Collisions",           to: "/lab/collision" },
+  { id: "circular",    label: "Circular motion",      to: "/lab/circular" },
+  { id: "rotational",  label: "Rotational dynamics",  to: "/lab/rotational" },
 ];
 
 export const catalogStats = {

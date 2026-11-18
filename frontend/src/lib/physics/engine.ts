@@ -423,3 +423,72 @@ export interface EnergyReport {
   /** Relative change of the total from its initial value. */
   drift: number;
 }
+
+// ---- Circular Motion -----------------------------------------------
+
+export interface CircularMotionAnalytic {
+  angularVelocity: number;      // omega = v / r   (rad/s)
+  tangentialVelocity: number;   // v               (m/s)
+  centripetalAccel: number;     // a_c = v² / r    (m/s²)
+  centripetalForce: number;     // F_c = m·a_c     (N)
+  period: number;               // T = 2π / omega  (s)
+  frequency: number;            // f = 1 / T       (Hz)
+  radius: number;               // r               (m)
+  mass: number;                 // m               (kg)
+}
+
+export interface CircularMotionInfo {
+  type: "circular";
+  parameters: SimParameter[];
+  analytic: CircularMotionAnalytic;
+}
+
+export interface CircularMotionState {
+  type: "circular";
+  time: number;
+  finished: boolean;
+  theta: number;       // cumulative angular displacement (rad)
+  thetaDeg: number;    // degrees
+  omega: number;       // current angular velocity (rad/s)
+  alpha: number;       // angular acceleration (rad/s²)
+  v: number;           // tangential velocity (m/s)
+  ac: number;          // centripetal acceleration (m/s²)
+  Fc: number;          // centripetal force (N)
+  pos: Vec2;           // position on circle (m)
+}
+
+// ---- Rotational Dynamics -------------------------------------------
+
+export interface RotationalDynamicsAnalytic {
+  momentOfInertia: number;  // I      (kg·m²)
+  torque: number;           // τ      (N·m)
+  angularAccel: number;     // α      (rad/s²)
+  shapeId: number;          // 0–6
+  shapeLabel: string;
+  shapeFormula: string;
+  radius: number;
+  mass: number;
+}
+
+export interface RotationalDynamicsInfo {
+  type: "rotational";
+  parameters: SimParameter[];
+  analytic: RotationalDynamicsAnalytic;
+}
+
+export interface RotationalDynamicsState {
+  type: "rotational";
+  time: number;
+  finished: boolean;
+  theta: number;    // angular displacement (rad)
+  thetaDeg: number;
+  omega: number;    // angular velocity (rad/s)
+  alpha: number;    // angular acceleration (rad/s²)
+  torque: number;   // applied net torque (N·m)
+  I: number;        // moment of inertia (kg·m²)
+  L: number;        // angular momentum (kg·m²/s)
+  KE: number;       // rotational kinetic energy (J)
+  P: number;        // rotational power (W)
+  W: number;        // work done by torque (J)
+  shapeId: number;
+}
