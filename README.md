@@ -1,121 +1,210 @@
-# KINETIQ: Interactive Physics Simulation and Learning Platform
+<div align="center">
 
-KINETIQ is a 2D physics simulation and learning platform. A **C++ physics engine**, compiled to
-**WebAssembly**, does all of the physics. A **React + TypeScript** interface turns it into a lab you can
-experiment in: build bodies, launch projectiles, swing pendulums, slide blocks down ramps, collide
-objects, read live graphs, and run guided experiments that end in a PDF report.
+# KINETIQ
 
-It started as an Object-Oriented Programming course project (a sandbox with gravity, friction and
-collisions) and has been extended into a platform with five dedicated simulations, free-body diagrams,
-energy and momentum analysis, analytics with CSV export, and guided experiments, **without replacing
-the original engine**: the sandbox, its API and its scenes still work.
+### Interactive 2D Physics Simulation & Learning Platform
 
-![KINETIQ dashboard](docs/screenshots/01-dashboard.png)
+*A C++17 Object-Oriented Physics Engine compiled to WebAssembly, paired with a modern React 19 + TypeScript laboratory.*
 
-> The hero on the dashboard is the real engine: three projectiles launched by the WebAssembly world.
-> Nothing on this page is animated in JavaScript.
+[![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](backend/)
+[![WebAssembly](https://img.shields.io/badge/WebAssembly-Emscripten-654FF0?style=for-the-badge&logo=webassembly&logoColor=white)](backend/build_web.sh)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](frontend/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](frontend/)
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](frontend/)
+[![C++ Tests](https://img.shields.io/badge/C%2B%2B_Checks-14%2C916_Passing-2EA043?style=for-the-badge)](backend/tests/test_main.cpp)
+[![E2E Tests](https://img.shields.io/badge/Playwright_E2E-43_Checks-2EA043?style=for-the-badge&logo=playwright&logoColor=white)](e2e/smoke_test.py)
+
+[Overview](#overview) · [Features](#features) · [Screenshots](#screenshots) · [Architecture](#architecture) · [OOP Design](#object-oriented-programming-oop-design) · [Getting Started](#getting-started) · [Testing](#testing--verification)
+
+<br />
+
+![KINETIQ Dashboard](docs/screenshots/01-dashboard.png)
+
+> *The hero animation on the dashboard is powered directly by the C++ WebAssembly engine—three live projectiles simulated under gravity, with zero physics computed in JavaScript.*
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+  - [Simulation Lab (10 Modules)](#1-simulation-lab-10-modules)
+  - [Guided Experiments & PDF Reports](#2-guided-experiments--pdf-reports-experiments)
+  - [Analytics Hub & CSV Export](#3-analytics-hub--csv-export-analytics)
+  - [Physics Concepts & Formula Library](#4-physics-concepts--formula-library-concepts)
+  - [Dashboard, Themes & Feedback](#5-dashboard-themes--feedback)
+- [Screenshots](#screenshots)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+  - [Three-Tier System Flow](#three-tier-system-flow)
+  - [C++ Class Hierarchy](#c-class-hierarchy)
+  - [Frame Loop & Numerical Integrators](#frame-loop--numerical-integrators)
+- [Object-Oriented Programming (OOP) Design](#object-oriented-programming-oop-design)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [1. Run the Web Application](#1-run-the-web-application)
+  - [2. Environment Variables (Optional Feedback Form)](#2-environment-variables-optional-feedback-form)
+  - [3. Build & Test the C++ Physics Engine](#3-build--test-the-c-physics-engine)
+  - [4. Production Build & Code Quality](#4-production-build--code-quality)
+  - [5. End-to-End Tests & Screenshot Automation](#5-end-to-end-tests--screenshot-automation)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Testing & Verification](#testing--verification)
+- [Project Structure](#project-structure)
+- [Known Limitations](#known-limitations)
+- [Roadmap](#roadmap)
+
+---
+
+## Overview
+
+**KINETIQ** is an interactive 2D physics simulation and educational laboratory built on a strict separation of concerns:
+
+- **100% of physics runs in C++17** compiled to **WebAssembly** via Emscripten. The C++ engine handles numerical integration, collision resolution, free-body force decomposition, energy and momentum accounting, and analytic formula calculations.
+- **React 19 + TypeScript** acts strictly as an interactive visualization and telemetry layer—rendering 60 fps HTML5 canvases, driving transport controls, plotting decimated Recharts graphs, and exporting CSV datasets and formatted PDF lab reports.
+
+Originally built as an Object-Oriented Programming (OOP) course project (a multi-body 2D sandbox with gravity, friction, and collisions), KINETIQ has been expanded into a complete learning platform featuring **10 simulation modules**, **5 guided experiments**, **10 Newton's law demonstrations**, and a **23-formula physics reference library**—while keeping the original sandbox engine, API, and preset scenes fully intact.
 
 ---
 
 ## Features
 
-**Simulation Lab** (`/lab`)
-- **Sandbox**: add circles, rectangles and triangles (static or dynamic) with chosen mass, size and initial
-  velocity; drag bodies; set gravity, friction, time step and the two restitution coefficients; step,
-  pause, reset to the start of the run, undo; five ready-made scenes. A physics inspector shows mass,
-  position, velocity, acceleration, net force and kinetic, potential and mechanical energy.
-- **Projectile motion**: speed, angle, gravity (Earth/Moon/Mars/Jupiter presets), launch height and mass.
-  Shows `T = 2u sinθ / g`, `H = u² sin²θ / 2g`, `R = u² sin 2θ / g` with your numbers substituted, a predicted
-  and a simulated path, and a formula-versus-simulation table.
-- **Spring-mass (simple harmonic motion)**: mass, spring constant and initial displacement; `F = −kx`,
-  `T = 2π√(m/k)`, displacement and velocity graphs.
-- **Pendulum**: length, bob mass, initial angle (to ±170°) and gravity; the *nonlinear* equation is solved
-  with RK4, so large swings show their longer period (compared with the exact elliptic-integral value).
-- **Inclined plane**: angle, mass, static and kinetic friction, gravity and an applied force; normal force,
-  weight components, friction (stick/slip), resultant and acceleration.
-- **Collisions**: two bodies with chosen masses, velocities and coefficient of restitution; Elastic /
-  Inelastic / Perfectly-inelastic presets and a before/after table.
-- **Free-body diagrams** for every module, and for the selected sandbox body: weight, normal, friction,
-  applied, tension and spring forces, resultant and (dashed) components, in one consistent coordinate
-  system (x right, y up).
-- **Energy and momentum**: live KE / PE / total energy for every module with a verdict on whether
-  mechanical energy is conserved (and why), plus total momentum for the sandbox and collisions.
+### 1. Simulation Lab (10 Modules)
 
-**Analytics** (`/analytics`): position, velocity, acceleration, kinetic, potential and total mechanical
-energy against time for each simulation, with units, tooltips, legends and a time window. **Export CSV**
-writes the complete recording, with units in the header.
+Accessible from `/lab` and dedicated lab routes, every module provides real-time parameter controls, live readouts, energy/momentum tracking, and interactive canvas rendering:
 
-**Experiments** (`/experiments`): five guided experiments (projectile verification, conservation of
-mechanical energy, elastic and inelastic collision, simple harmonic motion, friction on an inclined
-plane). Each has an objective, theory, equations, initial conditions, adjustable parameters, the live
-simulation, calculated results (formula against simulation), recorded observations and notes, and a
-**PDF report** (parameters, results, observations and graphs). The ten original Newton's-law
-demonstrations are kept under `/experiments/laws`.
+| Module | Route | Highlights & Physics Covered |
+|---|---|---|
+| **Interactive Sandbox** | `/lab` | Create dynamic or static circles, rectangles, and triangles with custom mass, size, position, and initial velocity; drag bodies directly on canvas; tune gravity, friction, time step (`dt`), body & wall restitution; undo/reset; 5 preset scenes (*Free Fall*, *Collision Lab*, *Friction Test*, *Projectile Motion*, *Empty World*); live Physics Inspector & Free-Body Diagram overlays. |
+| **Projectile Motion** | `/lab/projectile` | Adjustable speed, launch angle (`0–90°`), launch height, mass, and planetary gravity presets (*Earth, Moon, Mars, Jupiter*). Compares simulated trajectory against analytic $T = \frac{2u\sin\theta}{g}$, $H = \frac{u^2\sin^2\theta}{2g}$, and $R = \frac{u^2\sin 2\theta}{g}$. |
+| **Spring-Mass (SHM)** | `/lab/shm` | Hooke's law oscillator ($F = -kx$) with adjustable mass, spring constant $k$, and initial displacement; real-time period $T = 2\pi\sqrt{m/k}$, phase, displacement, velocity, and energy tracking. |
+| **Nonlinear Pendulum** | `/lab/pendulum` | Adjustable length, bob mass, gravity, and large initial angles up to $\pm 170^\circ$. Solves the full nonlinear equation via 4th-order Runge-Kutta (RK4) and compares period against the exact complete elliptic integral $T = 4\sqrt{L/g}\,K(\sin^2(\theta_0/2))$. |
+| **Inclined Plane** | `/lab/incline` | Adjustable ramp angle (`0–80°`), mass, static ($\mu_s$) and kinetic ($\mu_k$) friction, gravity, and applied force. Resolves normal force, weight components, stick/slip threshold ($\tan\theta_c = \mu_s$), and friction heat work. |
+| **1D Collisions** | `/lab/collision` | Two-body track with configurable masses, velocities, and coefficient of restitution $e \in [0, 1]$. Includes *Elastic*, *Inelastic*, and *Perfectly Inelastic* presets with a before/after momentum and kinetic energy comparison table. |
+| **Circular Motion** | `/lab/circular` | Uniform and non-uniform circular motion with adjustable mass, radius, tangential speed $v$, and angular acceleration $\alpha$. Tracks $\omega = v/r$, $a_c = v^2/r$, $F_c = m a_c$, period, and frequency. |
+| **Rotational Dynamics** | `/lab/rotational` | Rigid-body rotation under applied torque ($\tau = r F \sin\theta$, $\tau = I\alpha$) across **7 selectable geometries** (*Solid Disc, Solid Cylinder, Solid Sphere, Hollow Sphere, Thin Ring, Thin Rod about Center, Thin Rod about End*) with angular momentum $L = I\omega$, rotational kinetic energy, and power. |
+| **Air Resistance & Drag** | `/lab/drag` | Supports both **1D vertical free-fall** and **2D projectile motion** under *No Drag*, *Linear (Stokes) Drag* ($F_d = bv$), and *Quadratic Drag* ($F_d = \frac{1}{2}\rho C_d A v^2$). Computes terminal velocity $v_t$ and Reynolds number $\text{Re}$. |
+| **Orbital Mechanics** | `/lab/orbital` | Two-body Newtonian gravitation ($F = GMm/r^2$) around **5 selectable central bodies** (*Earth, Moon, Mars, Jupiter, Sun*). Computes circular orbital velocity $v_{\text{circ}} = \sqrt{GM/r}$, escape velocity $v_{\text{esc}} = \sqrt{2GM/r}$, orbital period, altitude, specific energy, and angular momentum. |
 
-**Physics Concepts** (`/concepts`): the original formula library (23 equations with explanations).
+**Cross-cutting Lab Capabilities:**
+- **Free-Body Diagrams (FBD):** Live vector overlays for weight, normal, friction, applied, tension, spring, and resultant forces (plus dashed components) in a consistent coordinate system (`+x` right, `+y` up).
+- **Energy & Momentum Accounting:** Real-time kinetic, potential, and total mechanical energy with conservation verdicts, plus system momentum tracking.
 
-**Dashboard**: real counts, "Recently explored" and "Learning progress" (stored in the browser).
+### 2. Guided Experiments & PDF Reports (`/experiments`)
+
+- **5 Structured Laboratory Experiments:**
+  1. *Projectile Motion Verification*
+  2. *Conservation of Mechanical Energy*
+  3. *Elastic and Inelastic Collisions*
+  4. *Simple Harmonic Motion*
+  5. *Friction on an Inclined Plane*
+- Each experiment includes an objective, theory, key equations, initial conditions, adjustable live parameters, a **Formula vs. Simulation** comparison table with percentage error, **Record this run** logging (persisted in `localStorage`), and student conclusion notes.
+- **One-Click PDF Lab Report (`jsPDF`):** Generates a multi-page academic report with experiment metadata, parameters, results table, observations, student notes, and print-ready canvas graphs.
+- **Newton's Laws Demonstrations (`/experiments/laws`):** 10 curated sandbox demonstrations illustrating Newton's 1st, 2nd, and 3rd laws, momentum conservation, kinetic friction, impulse-momentum theorem, and collision chains.
+
+### 3. Analytics Hub & CSV Export (`/analytics`)
+
+- Plot up to **6 synchronized live Recharts graphs** for any simulation module or the sandbox (position, velocity, acceleration, kinetic energy, potential energy, total mechanical energy, and friction dissipation).
+- Adjustable time windows (`10 s`, `30 s`), interactive tooltips, units, and legends.
+- **Export CSV:** Downloads the full recorded time-series dataset with SI units included in column headers.
+
+### 4. Physics Concepts & Formula Library (`/concepts`)
+
+- **23 interactive formula reference cards** organized across *Kinematics*, *Dynamics*, *Momentum*, *Work & Energy*, and *Gravitation*.
+- Each entry displays the equation, physical meaning, when to apply it, and a variable breakdown table with SI units and dimensional formulas (e.g., $[LT^{-1}]$).
+
+### 5. Dashboard, Themes & Feedback
+
+- **Dashboard (`/`):** Live C++ hero simulation, auto-derived catalog counters, browser-persisted *Learning Progress* tracker, and *Recently Explored* shortcuts.
+- **Dark & Light Themes:** Seamless theme toggling across all canvases, charts, and panels.
+- **About & Feedback (`/about`):** Architecture summary, OOP reference, keyboard shortcuts, and an integrated 5-star user feedback form backed by Supabase.
 
 ---
 
 ## Screenshots
 
-| | |
-|---|---|
-| ![Sandbox](docs/screenshots/02-sandbox-lab.png) **Sandbox lab**: inspector, forces, trajectory | ![Projectile](docs/screenshots/03-projectile.png) **Projectile motion** |
-| ![SHM](docs/screenshots/04-shm.png) **Spring-mass (SHM)** | ![Pendulum](docs/screenshots/05-pendulum.png) **Pendulum at a large angle** |
-| ![Incline](docs/screenshots/06-incline.png) **Inclined plane with forces** | ![Collision](docs/screenshots/07-collision.png) **Collisions** |
-| ![Analytics](docs/screenshots/08-analytics.png) **Analytics** | ![Experiment](docs/screenshots/10-experiment.png) **Guided experiment** |
+### Core Laboratory Views
 
-More: [experiments hub](docs/screenshots/09-experiments.png) ·
-[formula library](docs/screenshots/11-concepts.png) · [light theme](docs/screenshots/12-light-theme.png)
+| Interactive Sandbox Lab | Projectile Motion Lab |
+| :---: | :---: |
+| ![Sandbox Lab](docs/screenshots/02-sandbox-lab.png) | ![Projectile Motion](docs/screenshots/03-projectile.png) |
+| *Multi-body sandbox with live inspector, force vectors, and trajectory* | *Analytic vs. simulated parabola with planetary gravity presets* |
+
+| Spring-Mass (SHM) Lab | Nonlinear Pendulum Lab |
+| :---: | :---: |
+| ![Spring-Mass SHM](docs/screenshots/04-shm.png) | ![Nonlinear Pendulum](docs/screenshots/05-pendulum.png) |
+| *Hooke's law oscillator with live displacement and velocity telemetry* | *Large-angle RK4 integration compared against exact elliptic integral* |
+
+| Inclined Plane Lab | 1D Collisions Lab |
+| :---: | :---: |
+| ![Inclined Plane](docs/screenshots/06-incline.png) | ![Collisions](docs/screenshots/07-collision.png) |
+| *Free-body force decomposition with static/kinetic stick-slip analysis* | *Elastic & inelastic collisions with before/after momentum breakdown* |
+
+### Analytics, Guided Experiments, Formula Library & Light Theme
+
+| Live Telemetry Analytics | Guided Experiment & PDF Report |
+| :---: | :---: |
+| ![Analytics Hub](docs/screenshots/08-analytics.png) | ![Guided Experiment](docs/screenshots/10-experiment.png) |
+| *6 synchronized live time-series graphs with one-click CSV export* | *Structured lab runner with formula vs. measured table & PDF export* |
+
+| Guided Experiments Hub | Physics Concepts (23 Formulas) |
+| :---: | :---: |
+| ![Experiments Hub](docs/screenshots/09-experiments.png) | ![Formula Library](docs/screenshots/11-concepts.png) |
+| *5 guided experiments + 10 interactive Newton's law demonstrations* | *Categorized reference cards with SI units and dimensional formulas* |
+
+<details>
+<summary><strong>View Light Theme Dashboard Screenshot</strong></summary>
+<br />
+
+![KINETIQ Light Theme](docs/screenshots/12-light-theme.png)
+
+</details>
 
 ---
 
-## Technologies
+## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Physics engine | C++17, STL, no third-party libraries |
-| Browser bridge | Emscripten → WebAssembly, Embind |
-| Frontend | React 19, TypeScript (strict), TanStack Start / Router, Vite |
-| UI | Tailwind CSS 4, shadcn/ui (Radix), Lucide icons, Inter (self-hosted) |
-| Charts | Recharts (live graphs); a canvas renderer for the PDF's print-ready graphs |
-| Reports | jsPDF (loaded only when a report is requested) |
-| Tests | C++ assertion suite (`make test`); Playwright end-to-end suite (`e2e/`) |
+| Layer | Technologies | Notes |
+|---|---|---|
+| **Physics Engine** | C++17, Standard Template Library (STL) | Zero external C++ dependencies; custom integrators & analytic solvers |
+| **WebAssembly Bridge** | Emscripten (`em++`), Embind | `WebAPI` facade compiled to `physics_engine.js` & `physics_engine.wasm` |
+| **Frontend Framework** | React 19, TypeScript 5.8 (strict), TanStack Start / Router, Vite 8, Nitro | File-based routing (`routeTree.gen.ts`), fast SPA/SSR hybrid |
+| **UI & Styling** | Tailwind CSS 4, Radix UI (`@radix-ui/*`), shadcn/ui, Lucide Icons, Inter | Accessible components, technical HUD aesthetics, dark & light themes |
+| **Visuals & Charts** | HTML5 Canvas, Recharts | `requestAnimationFrame` canvas rendering; 10 Hz inspector / 5 Hz charts |
+| **Reporting & Export** | jsPDF (lazy-loaded), CSV Exporter | Multi-page PDF lab reports with canvas graphs; SI-annotated CSV exports |
+| **Persistence & Feedback** | Browser `localStorage`, Supabase (`@supabase/supabase-js`) | Local progress/observations persistence; remote feedback collection |
+| **Testing & Automation** | Native C++ assertion suite, Python Playwright (Chromium) | 14,916 C++ physics checks + 43 browser E2E checks + screenshot runner |
 
 ---
 
 ## Architecture
 
+### Three-Tier System Flow
+
 ```text
-┌───────────────────────────────────────────────────────────────┐
-│  React + TypeScript                                           │
-│  Dashboard · Lab · Concepts · Experiments · Analytics         │
-│  canvases draw from a per-frame feed; panels refresh at 10 Hz │
-└───────────────────────────────┬───────────────────────────────┘
-                                │  commands in, JSON snapshots out
-┌───────────────────────────────▼───────────────────────────────┐
-│  WebAssembly (Emscripten, Embind)   physics_engine.wasm / .js │
-│  WebAPI facade: sandbox functions + sim* functions            │
-└───────────────────────────────┬───────────────────────────────┘
-                                │
-┌───────────────────────────────▼───────────────────────────────┐
-│  C++ engine                                                   │
-│  Sandbox:  PhysicsEngine → World → PhysicsObject, Force,      │
-│            CollisionManager                                   │
-│  Labs:     Simulation (abstract) → 5 experiments              │
-│  Shared:   FreeBodyDiagram, SeriesRecorder, Environment       │
-└───────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│  React 19 + TypeScript (TanStack Start / Router)                       │
+│  Dashboard · Simulation Lab · Concepts · Experiments · Analytics      │
+│  Canvases draw via requestAnimationFrame; UI panels refresh at 10 Hz   │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │  Commands & parameters in, JSON snapshots out
+┌───────────────────────────────────▼────────────────────────────────────┐
+│  WebAssembly Bridge (Emscripten Embind)  physics_engine.js / .wasm     │
+│  WebAPI facade: Sandbox API + sim* polymorphic simulation API          │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+┌───────────────────────────────────▼────────────────────────────────────┐
+│  C++17 Physics Engine                                                  │
+│  • Sandbox: PhysicsEngine → World → PhysicsObject, Force, Collisions  │
+│  • Labs:    Simulation (abstract) → 9 concrete simulation subclasses   │
+│  • Shared:  FreeBodyDiagram, SeriesRecorder, Integrators, Vector2D     │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Principle: all physics is calculated in C++.** The browser sends commands (set a parameter, advance by
-this much time) and reads back JSON snapshots. It never integrates equations, and formula values shown
-next to simulated values are computed by the engine as well. The few display-only conversions (pixels,
-unit formatting, a percentage difference) are the only arithmetic in TypeScript. See
-[docs/WASM_API.md](docs/WASM_API.md) for the full interface.
+> **Design Principle:** The browser sends commands (set parameter, advance by $\Delta t$, spawn body) and reads JSON snapshots back. Even the theoretical/formula values displayed alongside simulated measurements are computed in C++. See [`docs/WASM_API.md`](docs/WASM_API.md) for the complete WebAssembly interface specification.
 
-### The C++ class structure
+### C++ Class Hierarchy
 
 ```mermaid
 classDiagram
@@ -125,204 +214,280 @@ classDiagram
       +update(dt)*
       +reset()*
       +stateJSON()*
+      +infoJSON()*
       +seriesJSON(n)*
       +forces() vector~ForceVector~
       +advance(seconds)
       +setParameter(name, value)
     }
+
     Simulation <|-- ProjectileSimulation
     Simulation <|-- InclinedPlaneSimulation
     Simulation <|-- CollisionSimulation
     Simulation <|-- OscillatorSimulation
+    Simulation <|-- CircularMotionSimulation
+    Simulation <|-- RotationalDynamicsSimulation
+    Simulation <|-- AirResistanceSimulation
+    Simulation <|-- OrbitalMechanicsSimulation
     OscillatorSimulation <|-- PendulumSimulation
     OscillatorSimulation <|-- SHMSimulation
+
     Simulation o-- SeriesRecorder
-    ProjectileSimulation o-- Environment
     SimulationManager o-- Simulation
     SimulationFactory ..> Simulation : creates
 
-    class Shape { <<abstract>> }
+    class Shape {
+      <<abstract>>
+      +area()*
+      +containsPoint(p)*
+      +boundingBox()*
+    }
     Shape <|-- Circle
     Shape <|-- Rectangle
     Shape <|-- Triangle
-    class PhysicsObject { <<abstract>> }
+
+    class PhysicsObject {
+      <<abstract>>
+    }
     PhysicsObject <|-- DynamicObject
     PhysicsObject <|-- StaticObject
     PhysicsObject o-- Shape
-    class Force { <<abstract>> +forceOn(obj)* +apply(obj) }
+
+    class Force {
+      <<abstract>>
+      +forceOn(obj)*
+      +apply(obj)
+    }
     Force <|-- GravityForce
     Force <|-- FrictionForce
     Force <|-- AppliedForce
+
     World o-- PhysicsObject
     World o-- Force
     World o-- CollisionManager
 ```
 
-### How a frame works
+### Frame Loop & Numerical Integrators
 
-1. **Fixed timestep.** `Simulation::advance(seconds)` accumulates real time and calls `update(1/240 s)` a
-   whole number of times, so results do not depend on the display's frame rate (and one frame is clipped
-   at 0.25 s so a hidden tab cannot cause a burst of catch-up steps). The sandbox keeps its original
-   `dt` (default 0.05 s), which is adjustable.
-2. **Integration**, chosen per problem:
+1. **Fixed Timestep Accumulation:** `Simulation::advance(seconds)` accumulates elapsed wall time and steps `update(1/240 s)` an integer number of times (clipping frame deltas at `0.25 s` to avoid catch-up spikes when returning to a background tab). `OrbitalMechanicsSimulation` overrides `advance()` with adaptive sub-stepping for planetary timescales, while the Sandbox retains its user-configurable `dt` (default `0.05 s`).
+2. **Problem-Specific Integrators:**
 
-| Simulation | Method | Why |
+| Simulation | Integration Method | Rationale |
 |---|---|---|
-| Sandbox | Semi-implicit Euler (original engine) | Simple, stable for the interactive world |
-| Projectile | Velocity Verlet + exact landing instant | Exact for constant acceleration |
-| Spring-mass | Velocity Verlet with substeps | Symplectic: energy stays bounded |
-| Pendulum | RK4 (`rk4Step<N>` template) with substeps | Nonlinear equation; negligible energy drift |
-| Incline | Exact constant-acceleration kinematics, split at stick/slip and at the ends | Friction regime changes mid-step |
-| Collision | Exact free flight, analytic impulse at the contact instant | Contact time independent of timestep |
+| **Sandbox** | Semi-implicit Euler | Simple and unconditionally responsive for interactive multi-body editing |
+| **Projectile Motion** | Velocity Verlet + exact landing instant | Exact for constant acceleration; pinpoints exact ground contact time |
+| **Spring-Mass (SHM)** | Velocity Verlet with sub-steps | Symplectic integrator keeps total mechanical energy bounded over long runs |
+| **Pendulum** | 4th-Order Runge-Kutta (`rk4Step<N>`) with sub-steps | Accurately integrates nonlinear large-angle swings with negligible energy drift |
+| **Inclined Plane** | Piecewise exact constant-acceleration kinematics | Analytically splits steps at static/kinetic friction transitions and track ends |
+| **Collisions** | Exact free flight + analytic impulse at contact | Contact time and restitution impulse are independent of timestep size |
+| **Circular Motion** | Analytic angular kinematics | Exact $\omega(t)$ and $\theta(t)$ for both uniform and accelerating circular paths |
+| **Rotational Dynamics** | Velocity Verlet on $(\theta, \omega)$ | Exact constant-torque angular kinematics and rotational energy accounting |
+| **Air Resistance** | Velocity Verlet (Störmer–Verlet) with sub-steps | Stable integration for both linear ($bv$) and quadratic ($\frac{1}{2}\rho C_d A v^2$) drag |
+| **Orbital Mechanics** | Velocity Verlet (Leapfrog) with adaptive sub-steps | Symplectic energy & angular momentum preservation across elliptical/escape orbits |
 
-3. **Rendering.** The animation loop writes each snapshot into a ref and notifies canvases directly;
-   React state (inspector, readouts, graphs) refreshes at 10 Hz, graphs at 5 Hz and decimated to ≤360
-   points. In a production-mode build every page holds ~60 fps, including 40 bodies and six live graphs.
+3. **Decoupled Rendering:** The animation loop stores snapshots in a mutable ref and repaints HTML5 canvases directly at 60 fps, while React UI panels refresh at 10 Hz and Recharts plots update at 5 Hz (decimated to $\le 360$ points).
 
 ---
 
-## OOP concepts implemented
+## Object-Oriented Programming (OOP) Design
 
-Each use has a purpose; none were added for show.
+Every OOP pillar and design pattern in the C++ codebase serves a concrete architectural purpose:
 
-| Concept | Where | Purpose |
+| Concept | Implementation in KINETIQ | Purpose |
 |---|---|---|
-| **Abstraction** | `Shape`, `PhysicsObject`, `Force`, `Simulation` (pure virtual methods) | Callers work with the interface: `SimulationManager` runs any experiment without knowing which |
-| **Inheritance** | `Circle/Rectangle/Triangle : Shape`; `DynamicObject/StaticObject : PhysicsObject`; `GravityForce/FrictionForce/AppliedForce : Force`; `Projectile/InclinedPlane/Collision : Simulation`; `Pendulum/SHM : OscillatorSimulation : Simulation` | Shared behaviour once; the oscillator layer owns period measurement |
-| **Runtime polymorphism** | `World` applies every `Force` through `forceOn()`; each simulation implements its own `update()`; `SimulationFactory` returns `unique_ptr<Simulation>` | One loop drives different physics |
-| **Encapsulation** | Private state with validated setters (`setLaunchSpeed`, `setStaticFriction`, ...); parameter ranges declared once in `parameterSpecs()`; exception hierarchy (`Exceptions.h`) | Invalid states cannot be constructed; rejected changes leave the old value |
-| **Composition** | `PhysicsObject` has a `Shape`; `World` owns objects, forces and the collision manager; simulations own an `Environment` and a `SeriesRecorder`; `SimulationManager` owns the active simulation | "Has-a" relationships for structure that is not an "is-a" |
-| **Operator overloading** | `Vector2D`: `+ - * /`, unary `-`, `scalar * v`, `+= -= *= /=`, `== !=`, `<< >>`, plus `dot`, `cross`, `rotated` | Vector maths reads like the equations |
-| **Templates** | `ObjectManager<T>`, `TimeSeries<T>` (bounded ring buffer), `rk4Step<N, Derivative>`, `clampValue<T>` | Generic containers and integrators reused across types |
-| **Template Method** | `Simulation::advance()` / `setParameter()`, `Force::apply()` | The fixed-step loop, validation and application are written once; subclasses supply the hooks |
-| **Factory / Facade** | `SimulationFactory`; `WebAPI` | One place to add an experiment; one narrow door to JavaScript |
+| **Abstraction** | Pure virtual interfaces: `Shape`, `PhysicsObject`, `Force`, `Simulation` | Callers like `SimulationManager` and `World` operate on contracts without coupling to concrete types |
+| **Inheritance** | `Circle`/`Rectangle`/`Triangle` $\to$ `Shape`; `DynamicObject`/`StaticObject` $\to$ `PhysicsObject`; `GravityForce`/`FrictionForce`/`AppliedForce` $\to$ `Force`; 9 lab classes $\to$ `Simulation` (via `OscillatorSimulation` for oscillators) | Shares common behavior (e.g., period measurement in `OscillatorSimulation`) without duplication |
+| **Runtime Polymorphism** | `World` iterates `vector<unique_ptr<PhysicsObject>>` and `vector<unique_ptr<Force>>`; `SimulationFactory::create()` returns `unique_ptr<Simulation>` | A single simulation loop and API facade drives 10 distinct physics domains |
+| **Encapsulation & Exceptions** | Private physics state with validated mutators; declarative bounds in `parameterSpecs()`; custom hierarchy in `Exceptions.h` | Prevents invalid physical states; rejected mutations leave prior state intact |
+| **Composition** | `PhysicsObject` has a `Shape`; `World` owns objects, forces, and `CollisionManager`; simulations own `SeriesRecorder` | Models clean *"has-a"* ownership using RAII smart pointers |
+| **Operator Overloading** | `Vector2D` overloads `+`, `-`, `*`, `/`, unary `-`, `scalar * v`, `+=`, `-=`, `*=`, `/=`, `==`, `!=`, `<<`, `>>` | Expresses vector physics naturally alongside `dot()`, `cross()`, and `rotated()` |
+| **Templates** | `TimeSeries<T>` (bounded ring buffer), `ObjectManager<T>`, `rk4Step<N, Derivative>`, `clampValue<T>` | Type-safe reusable containers and numerical solvers |
+| **Template Method Pattern** | `Simulation::advance()` / `setParameter()`, `Force::apply()` | Base class enforces fixed-step loop and bounds validation; subclasses supply `update()` / `applyParameter()` |
+| **Factory & Facade Patterns** | `SimulationFactory` and `WebAPI` | Single registration point for new simulations; narrow, stable Embind gateway to JavaScript |
 
 ---
 
-## Installation
+## Getting Started
 
-**Prerequisites:** Node.js 20.19+ (or 22.12+) and npm. For the C++ tests, g++ with C++17. To rebuild the WebAssembly
-engine, the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) (`emcc`).
+### Prerequisites
 
-### Run the web app
+- **Node.js** `20.19+` (or `22.12+`) and **npm**
+- **C++17 compiler** (`g++` or `clang++`) — *needed only to compile/run native C++ binaries & unit tests*
+- **[Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) (`emcc` / `em++`)** — *optional; needed only if you modify C++ code and want to rebuild WebAssembly*
+- **Python 3.9+ & Playwright** — *optional; needed only for E2E tests and screenshot automation*
+
+### 1. Run the Web Application
+
+Pre-compiled WebAssembly binaries (`physics_engine.js` and `physics_engine.wasm`) are already bundled in `frontend/public/`, so you can launch the web app immediately without installing Emscripten:
 
 ```bash
 cd frontend
 npm install
-npm run dev          # http://localhost:5173
+npm run dev
 ```
 
-The compiled engine (`frontend/public/physics_engine.js` and `.wasm`) is included, so the app runs
-without Emscripten.
+Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
-### Build and test the C++ engine
+### 2. Environment Variables (Optional Feedback Form)
+
+The `/about` page includes a Supabase-backed feedback form. Create `frontend/.env.local` with your Supabase project credentials:
+
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-or-publishable-key
+```
+
+> **Expected Supabase table:** `feedback` with columns `rating` (int, 1–5), `category` (text), and `message` (text).
+
+### 3. Build & Test the C++ Physics Engine
 
 ```bash
 cd backend
-make                 # console application  -> bin/physics_engine
-make test            # unit tests (14 916 checks)
-make run             # run the console application
-make web             # recompile to WebAssembly (needs emcc); copies the result to ../frontend/public
+
+# Build native console executable (bin/physics_engine)
+make
+
+# Run all 14,916 C++ unit & analytic verification checks
+make test
+
+# Run the native console application
+make run
+
+# Recompile C++ to WebAssembly and sync to frontend/public/ (requires emcc)
+make web
+
+# Serve the standalone HTML/WASM demo on http://localhost:8080
+make serve-web
 ```
 
-`make web` uses `build_web.sh`. If you add a `.cpp` file, add it to that script's source list.
+> **Note:** `make web` invokes `backend/build_web.sh`. If you add a new `.cpp` source file, add it to the source list in `build_web.sh`.
 
-### Production build and checks
+### 4. Production Build & Code Quality
 
 ```bash
 cd frontend
-npm run build        # production build
-npx tsc --noEmit     # type-check
-npm run lint         # ESLint + Prettier
+
+npm run build        # Production bundle (Vite + Nitro)
+npx tsc --noEmit     # Strict TypeScript type-check
+npm run lint         # ESLint check
+npm run format       # Prettier formatting
 ```
 
-### End-to-end tests
+### 5. End-to-End Tests & Screenshot Automation
 
 ```bash
 pip install playwright && playwright install chromium
-cd frontend && npm run dev                     # in one terminal
-python3 e2e/smoke_test.py                      # in another: 43 checks against hand-calculated values
-python3 e2e/capture_screenshots.py             # regenerates docs/screenshots
+
+# Terminal 1 — start the dev server
+cd frontend && npm run dev
+
+# Terminal 2 — run the 43 Playwright E2E checks
+python3 e2e/smoke_test.py
+
+# Regenerate all 12 screenshots in docs/screenshots/
+python3 e2e/capture_screenshots.py
 ```
 
-The PDF content check uses `pdftotext` (poppler) when it is installed.
+> Tip: Install `poppler` (`pdftotext`) if you want the E2E suite to inspect extracted PDF lab report text as well.
 
 ---
 
-## Testing and verification
+## Keyboard Shortcuts
 
-- **C++ (`backend/tests/test_main.cpp`, `make test`)**: 14,916 checks, no framework needed. They compare the
-  simulations with analytic solutions: projectile T, H, R over 420 parameter combinations; SHM period and
-  energy; pendulum period against the exact elliptic-integral value from 5° to 170° and RK4 energy
-  conservation; incline kinematics, the critical angle, stick/slip and energy bookkeeping; collision
-  formulas for every mass ratio and restitution; free-body diagram sums (`ΣF = ma`); numeric edge cases and
-  validation. Several tests were *mutation-checked*: reintroducing the original collision bugs fails
-  243 and 1 checks respectively.
-- **Browser (`e2e/smoke_test.py`)**: 43 checks that load every page without console errors and read numbers
-  back from the UI (for example `T = 3.60 s`, `v₁′ = −3.40 m/s`, PDF text, CSV header).
-- **Static**: strict TypeScript, ESLint with the project's Prettier config (0 errors).
+Active across the Simulation Lab pages:
 
-### Bugs found in the original engine
-
-Fixed:
-
-1. Collisions between two dynamic bodies divided the impulse by 2 instead of by `1/mA + 1/mB`, so
-   **momentum was not conserved for unequal masses** (a 1 kg body hitting a 9 kg body turned a total
-   momentum of 10 into 74).
-2. A dynamic body hitting a **static** body created *first* passed straight through (inverted sign); the
-   other creation order worked.
-
-Restitution (previously fixed at 0.6 for bodies and 0.7 for walls) is now configurable; the defaults are
-unchanged, so existing scenes behave as before.
-
-Found and deliberately left alone (see Known limitations): the sandbox friction law uses a constant 9.8
-instead of the gravity setting, and its undo history is unbounded.
+| Key | Action |
+| :---: | :--- |
+| `Space` | Play / Pause simulation |
+| `N` | Step forward by one frame / timestep |
+| `R` | Reset simulation to initial conditions |
 
 ---
 
-## Project structure
+## Testing & Verification
+
+- **C++ Unit & Physics Suite (`backend/tests/test_main.cpp`, `make test`):**
+  - **14,916 self-contained assertions** with zero external test framework dependencies.
+  - Verifies projectile $T, H, R$ across 420 parameter combinations; SHM period & energy; nonlinear pendulum period vs. exact elliptic integral from $5^\circ$ to $170^\circ$; inclined-plane critical angle, stick/slip transitions & work-energy accounting; 1D collisions across mass ratios & restitution values; free-body diagram force sums ($\Sigma\mathbf{F} = m\mathbf{a}$); numeric edge cases; and exception validation.
+  - Mutation-checked against historical engine bugs (reintroducing original collision bugs fails 243 and 1 checks respectively).
+- **Playwright Browser E2E Suite (`e2e/smoke_test.py`):**
+  - **43 end-to-end checks** loading every route with zero console errors and validating UI readouts against hand-calculated physics values (e.g., `T = 3.60 s`, `v₁′ = −3.40 m/s`, CSV headers, and PDF report contents).
+- **Static Analysis:** Strict TypeScript (`tsc --noEmit`) and ESLint + Prettier with zero errors.
+
+### Engine Bug Fixes Documented During Rework
+
+1. **Momentum Conservation for Unequal Masses:** Fixed an impulse scaling bug in dynamic-dynamic collisions that previously divided by `2` instead of `1/mA + 1/mB` (which broke momentum conservation for unequal masses).
+2. **Dynamic-Static Collision Order:** Fixed an inverted sign when a dynamic body collided with a static body created earlier in the world.
+3. **Configurable Restitution:** Exposed body and wall restitution coefficients as live parameters while preserving original defaults (`0.6` and `0.7`) for backward compatibility with existing scenes.
+
+---
+
+## Project Structure
 
 ```text
-backend/                    C++ engine
-  include/, src/            classes (see the diagram above)
-  tests/test_main.cpp       unit tests          (make test)
-  build_web.sh, Makefile    WebAssembly and native builds
-  web/, mini_physics_engine.html   the original standalone page (kept)
-frontend/                   React app
-  public/physics_engine.*   compiled engine
-  src/routes/               pages (dashboard, lab, labs, analytics, experiments, concepts, about)
-  src/components/           canvases, panels, charts, shell, shadcn/ui
-  src/lib/physics/          engine bridge, hooks, scenes
-  src/lib/experiments/      experiment definitions, observations, PDF report
-e2e/                        Playwright smoke tests and screenshot script
-docs/                       WebAssembly API reference, screenshots
+.
+├── backend/                          # C++17 Physics Engine & WebAssembly Build
+│   ├── include/                      # Headers (Simulation hierarchy, Shape, Force, World, Vector2D, WebAPI)
+│   ├── src/                          # C++ implementations (.cpp)
+│   ├── tests/
+│   │   └── test_main.cpp             # 14,916 unit & analytic physics verification checks
+│   ├── web/                          # Standalone Emscripten build output
+│   ├── build_web.sh                  # Emscripten (em++) compilation & sync script
+│   ├── Makefile                      # Native build, test, run, and web targets
+│   └── mini_physics_engine.html      # Original standalone HTML sandbox demo
+├── frontend/                         # React 19 + TypeScript Web Application
+│   ├── public/
+│   │   ├── physics_engine.js         # Pre-built WebAssembly JS glue
+│   │   └── physics_engine.wasm       # Pre-built WebAssembly binary
+│   ├── src/
+│   │   ├── components/               # Canvases, HUD panels, charts, FBD overlays, shadcn/ui
+│   │   ├── lib/
+│   │   │   ├── physics/              # WASM bridge, simulation hooks, preset scenes
+│   │   │   ├── experiments/          # Guided experiment definitions, observations, PDF generator
+│   │   │   ├── analyticsConfig.ts    # Chart channel & color definitions
+│   │   │   ├── catalog.ts            # Module & concept registry
+│   │   │   ├── export.ts             # SI-annotated CSV export utilities
+│   │   │   └── supabase.ts           # Supabase client configuration
+│   │   ├── routes/                   # TanStack Router file-based pages
+│   │   │   ├── index.tsx             # Dashboard (/)
+│   │   │   ├── lab.tsx               # Sandbox Lab (/lab)
+│   │   │   ├── lab_.*.tsx            # 9 dedicated simulation labs
+│   │   │   ├── analytics.tsx         # Telemetry Analytics (/analytics)
+│   │   │   ├── experiments.tsx       # Guided Experiments Hub (/experiments)
+│   │   │   ├── experiments_.$experimentId.tsx
+│   │   │   ├── experiments_.laws.tsx # 10 Newton's Law demonstrations
+│   │   │   ├── concepts.tsx          # 23-Formula Reference Library (/concepts)
+│   │   │   └── about.tsx             # Architecture, OOP summary & Feedback (/about)
+│   │   └── routeTree.gen.ts          # Auto-generated TanStack route tree
+│   ├── package.json
+│   └── vite.config.ts
+├── e2e/                              # End-to-End Automated Verification
+│   ├── smoke_test.py                 # 43 Playwright browser & physics checks
+│   └── capture_screenshots.py        # Automated documentation screenshot generator
+├── docs/
+│   ├── WASM_API.md                   # Complete WebAssembly API documentation
+│   └── screenshots/                  # 12 high-resolution UI screenshots
+└── README.md
 ```
-
-**Keyboard shortcuts** on the lab pages: `Space` play/pause, `N` step, `R` reset.
 
 ---
 
-## Known limitations
+## Known Limitations
 
-- Triangle and rectangle collisions in the sandbox still use bounding circles (as documented in the
-  original code); the dedicated collision module is one-dimensional and uses discs.
-- The sandbox friction law is the original `μ m·9.8` (it does not follow the gravity slider), and it has
-  no springs, pendulum constraints or contact (normal-force) model; the dedicated modules cover that
-  physics. Wall bounces and collisions are impulses, so they are not drawn in the sandbox free-body
-  diagram.
-- The sandbox keeps its original semi-implicit Euler integrator, so energy drifts by a few percent in
-  frictionless runs at `dt = 0.05`; the dedicated simulations use the more accurate methods above.
-- Observations, notes, "recently explored" and progress are stored in the browser's `localStorage`.
-- The PDF's built-in font has no Greek letters, so equations in reports are written in ASCII
-  (`theta`, `mu_s`).
-- Not verified here: Safari and Firefox (tested in Chromium).
+- **Sandbox Shapes:** Triangle and rectangle collisions in the Sandbox use bounding-circle approximations (as designed in the original engine); the dedicated Collision lab models 1D disc impacts analytically.
+- **Sandbox Friction & Integrator:** The Sandbox preserves its original friction law (`μ·m·9.8`) and semi-implicit Euler integrator (`dt = 0.05 s`), which can show slight energy drift in frictionless runs; the 9 dedicated labs use higher-order / exact integrators.
+- **Client-Side Persistence:** Observations, notes, recently explored links, and learning progress are stored locally in browser `localStorage`.
+- **PDF Typography:** Built-in `jsPDF` fonts use ASCII notation for Greek symbols in exported PDF equations (e.g., `theta`, `mu_s`).
+- **Browser Testing:** Automated E2E verification is run in Chromium (Safari and Firefox have not been formally verified in CI).
 
-## Future scope
+---
 
-- Sandbox springs, pendulum constraints and joints; rotation and angular momentum (torque, moment of
-  inertia); proper polygon collision (SAT).
-- Circular motion and orbital simulations (the dashboard card is marked *Planned*).
-- Air resistance and damping, with a damped-oscillator experiment.
-- Two-dimensional collisions in the dedicated module; shareable experiment links.
-- Saving and loading scenes and observations to a file or account; a teacher view for collecting reports.
-- More experiments (Hooke's law, momentum in two dimensions), and automated visual regression tests.
+## Roadmap
+
+- [ ] Separating Axis Theorem (SAT) polygon collision detection in the Sandbox
+- [ ] Springs, pendulum constraints, and articulated joints inside the Sandbox
+- [ ] 2D oblique collisions in the dedicated Collisions lab
+- [ ] Damped harmonic oscillator & resonance guided experiment
+- [ ] Shareable experiment URLs and cloud save/load for custom sandbox scenes
+- [ ] Instructor dashboard for collecting and reviewing student PDF lab reports
+- [ ] Automated visual regression testing across light and dark themes
