@@ -493,92 +493,45 @@ export interface RotationalDynamicsState {
   shapeId: number;
 }
 
-// ---- Air Resistance & Terminal Velocity ----------------------------
+// ---- Damped Harmonic Motion ----------------------------------------
 
-export interface AirResistanceAnalytic {
-  terminalVelocity: number;   // v_t  (m/s)
-  gravityForce: number;       // mg   (N)
-  dragMode: number;           // 0=none, 1=linear, 2=quadratic
-  projMode: boolean;          // 2D projectile mode?
-  mass: number;
-  gravity: number;
-  linearDrag: number;
-  dragCoeff: number;
-  crossSection: number;
-  airDensity: number;
+export type DampingRegime = "underdamped" | "critical" | "overdamped";
+
+export interface DhmAnalytic {
+  omega0: number;           // ω₀ = √(k/m)           rad/s
+  naturalFrequency: number; // f₀ = ω₀/(2π)          Hz
+  naturalPeriod: number;    // T₀ = 2π/ω₀            s
+  beta: number;             // β  = c/(2m)            rad/s
+  dampingRatio: number;     // ζ  = c/(2√(km))
+  criticalDamping: number;  // c_crit = 2√(km)        N·s/m
+  omegaD: number;           // ω_d (underdamped only) rad/s
+  dampedFrequency: number;  // f_d = ω_d/(2π)         Hz
+  dampedPeriod: number | null;
+  qualityFactor: number | null; // Q = 1/(2ζ)
+  initialEnergy: number;    // ½mv₀² + ½kx₀²          J
+  regime: DampingRegime;
 }
 
-export interface AirResistanceInfo {
-  type: "drag";
+export interface DhmInfo {
+  type: "dhm";
   parameters: SimParameter[];
-  analytic: AirResistanceAnalytic;
+  analytic: DhmAnalytic;
 }
 
-export interface AirResistanceState {
-  type: "drag";
+export interface DhmState {
+  type: "dhm";
   time: number;
   finished: boolean;
-  x: number;              // horizontal position (m) — always 0 in 1D mode
-  y: number;              // vertical position (m)
-  vx: number;             // horizontal velocity (m/s)
-  vy: number;             // vertical velocity (m/s)
-  ax: number;             // horizontal acceleration (m/s²)
-  ay: number;             // vertical acceleration (m/s²)
-  speed: number;          // |v| (m/s)
-  dragForce: number;      // |F_d| (N)
-  gravityForce: number;   // mg (N)
-  netForce: number;       // net force magnitude (N)
-  reynoldsNumber: number; // Re (dimensionless)
-  terminalVelocity: number; // v_t (m/s)
-  dragMode: number;       // 0/1/2
-  projMode: boolean;      // true = 2D projectile
-}
-
-// ---- Orbital Mechanics --------------------------------------------
-
-export interface OrbitalMechanicsAnalytic {
-  circularVelocity: number;    // v_circ = sqrt(GM/r)   (m/s)
-  escapeVelocity: number;      // v_esc  = sqrt(2GM/r)  (m/s)
-  orbitalPeriod: number;       // T = 2π√(r³/GM)        (s)
-  gravForce: number;           // F = GMm/r²            (N)
-  potentialEnergy: number;     // U = -GMm/r            (J)
-  totalEnergy: number;         // E = -GMm/2r           (J)
-  angularMomentum: number;     // L = m*v_circ*r        (kg·m²/s)
-  gravFieldStrength: number;   // g = GM/r²             (m/s²)
-  gravPotential: number;       // V = -GM/r             (J/kg)
-  altitude: number;            // r - R_body            (m)
-  bodyId: number;              // 0–4
-  bodyName: string;
-  bodyRadius: number;          // (m)
-  mu: number;                  // GM  (m³/s²)
-  mass: number;                // satellite mass (kg)
-}
-
-export interface OrbitalMechanicsInfo {
-  type: "orbital";
-  parameters: SimParameter[];
-  analytic: OrbitalMechanicsAnalytic;
-}
-
-export interface OrbitalMechanicsState {
-  type: "orbital";
-  time: number;
-  finished: boolean;
-  x: number;               // satellite x position (m)
-  y: number;               // satellite y position (m)
-  vx: number;
-  vy: number;
-  ax: number;
-  ay: number;
-  r: number;               // distance from central body centre (m)
-  altitude: number;        // r - R_body (m)
-  speed: number;           // |v| (m/s)
-  gravForce: number;       // F = GMm/r²  (N)
-  potentialEnergy: number; // U = -GMm/r  (J)
-  totalEnergy: number;     // E = KE + U  (J)
-  angularMomentum: number; // L = m(x*vy - y*vx)  (kg·m²/s)
-  circularVelocity: number;// sqrt(GM/r)  (m/s) at current r
-  escapeVelocity: number;  // sqrt(2GM/r) (m/s) at current r
-  bodyId: number;
-  bodyRadius: number;
+  x: number;         // displacement    m
+  v: number;         // velocity        m/s
+  a: number;         // acceleration    m/s²
+  Fspring: number;   // −kx             N
+  Fdamp: number;     // −cv             N
+  Fnet: number;      // net force       N
+  energy: EnergyReport;
+  measuredPeriod: number | null;
+  regime: DampingRegime;
+  dampingRatio: number;
+  omega0: number;
+  omegaD: number;
 }

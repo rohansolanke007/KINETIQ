@@ -17,14 +17,13 @@ em++ \
   -O2 \
   -Wall -Wextra \
   -Iinclude \
-  src/AirResistanceSimulation.cpp \
   src/Collision.cpp \
   src/CircularMotionSimulation.cpp \
   src/CollisionSimulation.cpp \
+  src/DampedHarmonicMotionSimulation.cpp \
   src/Force.cpp \
   src/FreeBodyDiagram.cpp \
   src/InclinedPlaneSimulation.cpp \
-  src/OrbitalMechanicsSimulation.cpp \
   src/PendulumSimulation.cpp \
   src/PhysicsEngine.cpp \
   src/PhysicsObject.cpp \

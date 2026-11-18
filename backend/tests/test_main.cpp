@@ -1,5 +1,6 @@
 // Self-contained test runner (no external framework). Run with: make test
 #include "CollisionSimulation.h"
+#include "DampedHarmonicMotionSimulation.h"
 #include "FreeBodyDiagram.h"
 #include "InclinedPlaneSimulation.h"
 #include "Integrators.h"
@@ -937,6 +938,204 @@ static void testEnergyAccounting() {
     CHECK_NEAR(numbersAfter(st, "accountingError")[0], 0.0, 1e-8);
 }
 
+// ---- Damped Harmonic Motion Tests ----------------------------------------
+
+static void testDampedHarmonicMotion() {
+    // ---- Test 1: Natural frequency ω₀ = √(k/m)
+    // m=1 kg, k=100 N/m → ω₀=10 rad/s, f₀≈1.59155 Hz
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 100.0);
+        dhm.setParameter("damping", 0.0);
+        dhm.setParameter("displacement", 0.1);
+        dhm.reset();
+        const DampedHarmonicResults r = dhm.analytic();
+        CHECK_NEAR(r.omega0, 10.0, 1e-9);
+        CHECK_NEAR(r.naturalFrequency, 10.0 / (2.0 * kPi), 1e-9);
+    }
+
+    // ---- Test 2: Critical damping coefficient c_c = 2√(km)
+    // m=1, k=100 → c_c=20 N·s/m
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 100.0);
+        dhm.setParameter("damping", 0.0);
+        dhm.reset();
+        const DampedHarmonicResults r = dhm.analytic();
+        CHECK_NEAR(r.criticalDamping, 20.0, 1e-9);
+    }
+
+    // ---- Test 3: Underdamped (ζ=0.5, ω_d=√75)
+    // m=1, k=100, c=10 → ζ=0.5, ω_d≈8.66025
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 100.0);
+        dhm.setParameter("damping", 10.0);
+        dhm.reset();
+        const DampedHarmonicResults r = dhm.analytic();
+        CHECK_NEAR(r.dampingRatio, 0.5, 1e-9);
+        CHECK(r.regime == DampingRegime::Underdamped);
+        CHECK_NEAR(r.omegaD, std::sqrt(75.0), 1e-6);
+    }
+
+    // ---- Test 4: Critically damped (ζ=1)
+    // m=1, k=100, c=20 → ζ=1
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 100.0);
+        dhm.setParameter("damping", 20.0);
+        dhm.reset();
+        const DampedHarmonicResults r = dhm.analytic();
+        CHECK_NEAR(r.dampingRatio, 1.0, 1e-9);
+        CHECK(r.regime == DampingRegime::Critical);
+    }
+
+    // ---- Test 5: Overdamped (ζ=1.5)
+    // m=1, k=100, c=30 → ζ=1.5
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 100.0);
+        dhm.setParameter("damping", 30.0);
+        dhm.reset();
+        const DampedHarmonicResults r = dhm.analytic();
+        CHECK_NEAR(r.dampingRatio, 1.5, 1e-9);
+        CHECK(r.regime == DampingRegime::Overdamped);
+    }
+
+    // ---- Test 6: Initial conditions are applied exactly
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 100.0);
+        dhm.setParameter("damping", 5.0);
+        dhm.setParameter("displacement", 0.1);
+        dhm.setParameter("velocity", 0.0);
+        dhm.reset();
+        CHECK_NEAR(dhm.displacement(), 0.1, 1e-12);
+        CHECK_NEAR(dhm.velocity(), 0.0, 1e-12);
+    }
+
+    // ---- Test 7: Energy dissipation - E must decrease when c > 0
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 25.0);
+        dhm.setParameter("damping", 2.0);
+        dhm.setParameter("displacement", 1.0);
+        dhm.setParameter("velocity", 0.0);
+        dhm.reset();
+        const double E0 = dhm.totalEnergy();
+        // Run for 5 seconds
+        for (int i = 0; i < 300; ++i) dhm.advance(1.0 / 60.0);
+        const double E1 = dhm.totalEnergy();
+        CHECK(E1 < E0);
+        CHECK(std::isfinite(E1));
+        CHECK(E1 >= 0.0);
+    }
+
+    // ---- Test 7b: Energy conservation when c = 0
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 25.0);
+        dhm.setParameter("damping", 0.0);
+        dhm.setParameter("displacement", 1.0);
+        dhm.setParameter("velocity", 0.0);
+        dhm.reset();
+        const double E0 = dhm.totalEnergy();
+        for (int i = 0; i < 600; ++i) dhm.advance(1.0 / 60.0);
+        const double E1 = dhm.totalEnergy();
+        // Should be approximately conserved (within 0.1% due to RK4 truncation)
+        CHECK_NEAR(E1, E0, E0 * 0.001);
+    }
+
+    // ---- Test 8: Stability across all regimes — no NaN, no Inf
+    {
+        // Underdamped
+        DampedHarmonicMotionSimulation dhm1;
+        dhm1.setParameter("mass", 1.0);
+        dhm1.setParameter("k", 100.0);
+        dhm1.setParameter("damping", 5.0);
+        dhm1.setParameter("displacement", 0.5);
+        dhm1.reset();
+        for (int i = 0; i < 600; ++i) dhm1.advance(1.0 / 60.0);
+        CHECK(std::isfinite(dhm1.displacement()));
+        CHECK(std::isfinite(dhm1.velocity()));
+        CHECK(dhm1.analytic().regime == DampingRegime::Underdamped);
+
+        // Critically damped
+        DampedHarmonicMotionSimulation dhm2;
+        dhm2.setParameter("mass", 1.0);
+        dhm2.setParameter("k", 100.0);
+        dhm2.setParameter("damping", 20.0);
+        dhm2.setParameter("displacement", 0.5);
+        dhm2.reset();
+        for (int i = 0; i < 600; ++i) dhm2.advance(1.0 / 60.0);
+        CHECK(std::isfinite(dhm2.displacement()));
+        CHECK(std::isfinite(dhm2.velocity()));
+        CHECK(dhm2.analytic().regime == DampingRegime::Critical);
+
+        // Overdamped
+        DampedHarmonicMotionSimulation dhm3;
+        dhm3.setParameter("mass", 1.0);
+        dhm3.setParameter("k", 100.0);
+        dhm3.setParameter("damping", 50.0);
+        dhm3.setParameter("displacement", 0.5);
+        dhm3.reset();
+        for (int i = 0; i < 600; ++i) dhm3.advance(1.0 / 60.0);
+        CHECK(std::isfinite(dhm3.displacement()));
+        CHECK(std::isfinite(dhm3.velocity()));
+        CHECK(dhm3.analytic().regime == DampingRegime::Overdamped);
+
+        // Reset restores initial conditions
+        dhm1.reset();
+        CHECK_NEAR(dhm1.displacement(), 0.5, 1e-12);
+        CHECK_NEAR(dhm1.velocity(),     0.0, 1e-12);
+    }
+
+    // ---- Test 9: SimulationManager can create "dhm" by type name
+    {
+        SimulationManager mgr;
+        mgr.select("dhm");
+        CHECK(mgr.hasActive());
+        CHECK(mgr.active().typeName() == "dhm");
+    }
+
+    // ---- Test 10: JSON output is valid (non-empty, starts with '{')
+    {
+        DampedHarmonicMotionSimulation dhm;
+        dhm.setParameter("mass", 1.0);
+        dhm.setParameter("k", 25.0);
+        dhm.setParameter("damping", 1.0);
+        dhm.setParameter("displacement", 1.0);
+        dhm.reset();
+        const std::string state = dhm.stateJSON();
+        const std::string info  = dhm.infoJSON();
+        CHECK(!state.empty() && state[0] == '{');
+        CHECK(!info.empty()  && info[0]  == '{');
+        CHECK(state.find("\"type\":\"dhm\"") != std::string::npos);
+        CHECK(state.find("\"regime\"")       != std::string::npos);
+        CHECK(info.find("\"dampingRatio\"")  != std::string::npos);
+        CHECK(info.find("\"criticalDamping\"") != std::string::npos);
+    }
+
+    // ---- Test 11: Parameter validation throws on bad input
+    {
+        DampedHarmonicMotionSimulation dhm;
+        CHECK_THROWS(dhm.setParameter("mass", 0.0));        // too small
+        CHECK_THROWS(dhm.setParameter("mass", -1.0));       // negative
+        CHECK_THROWS(dhm.setParameter("k", 0.0));           // zero spring
+        CHECK_THROWS(dhm.setParameter("damping", -1.0));    // negative damping
+        CHECK_THROWS(dhm.setParameter("displacement", 10.0)); // out of range
+        CHECK_THROWS(dhm.setParameter("velocity", 100.0));    // out of range
+    }
+}
+
 int main() {
     testVector2D();
     testTimeSeries();
@@ -968,6 +1167,7 @@ int main() {
     testCollisionSimulation();
     testCollisionTimingAndStates();
     testEnergyAccounting();
+    testDampedHarmonicMotion();
 
     std::cout << g_checks << " checks, " << g_failures << " failed\n";
     return g_failures == 0 ? 0 : 1;

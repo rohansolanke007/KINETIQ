@@ -19,13 +19,12 @@ export interface ConceptArea {
     | "/lab"
     | "/lab/projectile"
     | "/lab/shm"
+    | "/lab/dhm"
     | "/lab/pendulum"
     | "/lab/incline"
     | "/lab/collision"
     | "/lab/circular"
     | "/lab/rotational"
-    | "/lab/drag"
-    | "/lab/orbital"
     | "/experiments"
     | "/experiments/laws"
     | "/concepts";
@@ -54,6 +53,13 @@ export const conceptAreas: ConceptArea[] = [
     to: "/lab/shm",
   },
   {
+    id: "damped-oscillations",
+    name: "Damped harmonic motion",
+    description: "Underdamped, critically damped and overdamped spring-mass-damper systems.",
+    status: "available",
+    to: "/lab/dhm",
+  },
+  {
     id: "circular",
     name: "Circular motion",
     description: "Centripetal force, angular velocity and orbital paths — live C++ simulation.",
@@ -74,20 +80,6 @@ export const conceptAreas: ConceptArea[] = [
     status: "available",
     to: "/lab/collision",
   },
-  {
-    id: "air-resistance",
-    name: "Air resistance & terminal velocity",
-    description: "Linear and quadratic drag, Reynolds number, terminal velocity — numerical integration.",
-    status: "available",
-    to: "/lab/drag",
-  },
-  {
-    id: "gravitation",
-    name: "Gravitational force & orbital mechanics",
-    description: "Newton's law of gravitation, orbital velocity, escape velocity and Kepler's third law.",
-    status: "available",
-    to: "/lab/orbital",
-  },
 ];
 
 /** Dedicated simulations offered in the Simulation Lab (each a C++ Simulation subclass,
@@ -99,26 +91,24 @@ export interface SimulationModule {
     | "/lab"
     | "/lab/projectile"
     | "/lab/shm"
+    | "/lab/dhm"
     | "/lab/pendulum"
     | "/lab/incline"
     | "/lab/collision"
     | "/lab/circular"
-    | "/lab/rotational"
-    | "/lab/drag"
-    | "/lab/orbital";
+    | "/lab/rotational";
 }
 
 export const simulationModules: SimulationModule[] = [
   { id: "sandbox",     label: "Sandbox",             to: "/lab" },
   { id: "projectile",  label: "Projectile motion",   to: "/lab/projectile" },
   { id: "shm",         label: "Spring-mass (SHM)",   to: "/lab/shm" },
+  { id: "dhm",         label: "Damped oscillation",  to: "/lab/dhm" },
   { id: "pendulum",    label: "Pendulum",             to: "/lab/pendulum" },
   { id: "incline",     label: "Inclined plane",       to: "/lab/incline" },
   { id: "collision",   label: "Collisions",           to: "/lab/collision" },
   { id: "circular",    label: "Circular motion",      to: "/lab/circular" },
   { id: "rotational",  label: "Rotational dynamics",  to: "/lab/rotational" },
-  { id: "drag",        label: "Air resistance",        to: "/lab/drag" },
-  { id: "orbital",     label: "Orbital mechanics",     to: "/lab/orbital" },
 ];
 
 export const catalogStats = {
