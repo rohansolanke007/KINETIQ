@@ -24,6 +24,8 @@ export interface ConceptArea {
     | "/lab/collision"
     | "/lab/circular"
     | "/lab/rotational"
+    | "/lab/drag"
+    | "/lab/orbital"
     | "/experiments"
     | "/experiments/laws"
     | "/concepts";
@@ -72,6 +74,20 @@ export const conceptAreas: ConceptArea[] = [
     status: "available",
     to: "/lab/collision",
   },
+  {
+    id: "air-resistance",
+    name: "Air resistance & terminal velocity",
+    description: "Linear and quadratic drag, Reynolds number, terminal velocity — numerical integration.",
+    status: "available",
+    to: "/lab/drag",
+  },
+  {
+    id: "gravitation",
+    name: "Gravitational force & orbital mechanics",
+    description: "Newton's law of gravitation, orbital velocity, escape velocity and Kepler's third law.",
+    status: "available",
+    to: "/lab/orbital",
+  },
 ];
 
 /** Dedicated simulations offered in the Simulation Lab (each a C++ Simulation subclass,
@@ -87,7 +103,9 @@ export interface SimulationModule {
     | "/lab/incline"
     | "/lab/collision"
     | "/lab/circular"
-    | "/lab/rotational";
+    | "/lab/rotational"
+    | "/lab/drag"
+    | "/lab/orbital";
 }
 
 export const simulationModules: SimulationModule[] = [
@@ -99,6 +117,8 @@ export const simulationModules: SimulationModule[] = [
   { id: "collision",   label: "Collisions",           to: "/lab/collision" },
   { id: "circular",    label: "Circular motion",      to: "/lab/circular" },
   { id: "rotational",  label: "Rotational dynamics",  to: "/lab/rotational" },
+  { id: "drag",        label: "Air resistance",        to: "/lab/drag" },
+  { id: "orbital",     label: "Orbital mechanics",     to: "/lab/orbital" },
 ];
 
 export const catalogStats = {

@@ -12,6 +12,7 @@ export function SimTransport({
   onStep,
   onReset,
   extra,
+  hideSpeed = false,
 }: {
   running: boolean;
   finished: boolean;
@@ -23,6 +24,8 @@ export function SimTransport({
   onStep: () => void;
   onReset: () => void;
   extra?: React.ReactNode;
+  /** Set true to suppress the built-in 0.25×–2× speed selector (e.g. when a module provides its own). */
+  hideSpeed?: boolean;
 }) {
   return (
     <div className="glass flex flex-wrap items-center gap-2 rounded-lg px-3 py-2.5">
@@ -45,22 +48,24 @@ export function SimTransport({
           <RotateCcw className="size-3.5" aria-hidden /> Reset
         </ActionButton>
       </div>
-      <div className="flex items-center gap-2 pl-1">
-        <span className="label-micro">Speed</span>
-        <div className="w-40">
-          <SegmentedControl
-            size="sm"
-            value={speed}
-            onChange={onSpeed}
-            options={[
-              { label: "0.25×", value: 0.25 },
-              { label: "0.5×", value: 0.5 },
-              { label: "1×", value: 1 },
-              { label: "2×", value: 2 },
-            ]}
-          />
+      {!hideSpeed && (
+        <div className="flex items-center gap-2 pl-1">
+          <span className="label-micro">Speed</span>
+          <div className="w-40">
+            <SegmentedControl
+              size="sm"
+              value={speed}
+              onChange={onSpeed}
+              options={[
+                { label: "0.25×", value: 0.25 },
+                { label: "0.5×", value: 0.5 },
+                { label: "1×", value: 1 },
+                { label: "2×", value: 2 },
+              ]}
+            />
+          </div>
         </div>
-      </div>
+      )}
       {extra && <div className="ml-auto flex flex-wrap items-center gap-1.5">{extra}</div>}
     </div>
   );

@@ -21,7 +21,9 @@ import { Route as ExperimentsExperimentIdRouteImport } from './routes/experiment
 import { Route as ExperimentsLawsRouteImport } from './routes/experiments_.laws'
 import { Route as LabCircularRouteImport } from './routes/lab_.circular'
 import { Route as LabCollisionRouteImport } from './routes/lab_.collision'
+import { Route as LabDragRouteImport } from './routes/lab_.drag'
 import { Route as LabInclineRouteImport } from './routes/lab_.incline'
+import { Route as LabOrbitalRouteImport } from './routes/lab_.orbital'
 import { Route as LabPendulumRouteImport } from './routes/lab_.pendulum'
 import { Route as LabProjectileRouteImport } from './routes/lab_.projectile'
 import { Route as LabRotationalRouteImport } from './routes/lab_.rotational'
@@ -87,9 +89,19 @@ const LabCollisionRoute = LabCollisionRouteImport.update({
   path: '/lab/collision',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LabDragRoute = LabDragRouteImport.update({
+  id: '/lab_/drag',
+  path: '/lab/drag',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabInclineRoute = LabInclineRouteImport.update({
   id: '/lab_/incline',
   path: '/lab/incline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabOrbitalRoute = LabOrbitalRouteImport.update({
+  id: '/lab_/orbital',
+  path: '/lab/orbital',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LabPendulumRoute = LabPendulumRouteImport.update({
@@ -126,7 +138,9 @@ export interface FileRoutesByFullPath {
   '/experiments/laws': typeof ExperimentsLawsRoute
   '/lab/circular': typeof LabCircularRoute
   '/lab/collision': typeof LabCollisionRoute
+  '/lab/drag': typeof LabDragRoute
   '/lab/incline': typeof LabInclineRoute
+  '/lab/orbital': typeof LabOrbitalRoute
   '/lab/pendulum': typeof LabPendulumRoute
   '/lab/projectile': typeof LabProjectileRoute
   '/lab/rotational': typeof LabRotationalRoute
@@ -145,7 +159,9 @@ export interface FileRoutesByTo {
   '/experiments/laws': typeof ExperimentsLawsRoute
   '/lab/circular': typeof LabCircularRoute
   '/lab/collision': typeof LabCollisionRoute
+  '/lab/drag': typeof LabDragRoute
   '/lab/incline': typeof LabInclineRoute
+  '/lab/orbital': typeof LabOrbitalRoute
   '/lab/pendulum': typeof LabPendulumRoute
   '/lab/projectile': typeof LabProjectileRoute
   '/lab/rotational': typeof LabRotationalRoute
@@ -165,7 +181,9 @@ export interface FileRoutesById {
   '/experiments_/laws': typeof ExperimentsLawsRoute
   '/lab_/circular': typeof LabCircularRoute
   '/lab_/collision': typeof LabCollisionRoute
+  '/lab_/drag': typeof LabDragRoute
   '/lab_/incline': typeof LabInclineRoute
+  '/lab_/orbital': typeof LabOrbitalRoute
   '/lab_/pendulum': typeof LabPendulumRoute
   '/lab_/projectile': typeof LabProjectileRoute
   '/lab_/rotational': typeof LabRotationalRoute
@@ -186,7 +204,9 @@ export interface FileRouteTypes {
     | '/experiments/laws'
     | '/lab/circular'
     | '/lab/collision'
+    | '/lab/drag'
     | '/lab/incline'
+    | '/lab/orbital'
     | '/lab/pendulum'
     | '/lab/projectile'
     | '/lab/rotational'
@@ -205,7 +225,9 @@ export interface FileRouteTypes {
     | '/experiments/laws'
     | '/lab/circular'
     | '/lab/collision'
+    | '/lab/drag'
     | '/lab/incline'
+    | '/lab/orbital'
     | '/lab/pendulum'
     | '/lab/projectile'
     | '/lab/rotational'
@@ -224,7 +246,9 @@ export interface FileRouteTypes {
     | '/experiments_/laws'
     | '/lab_/circular'
     | '/lab_/collision'
+    | '/lab_/drag'
     | '/lab_/incline'
+    | '/lab_/orbital'
     | '/lab_/pendulum'
     | '/lab_/projectile'
     | '/lab_/rotational'
@@ -244,7 +268,9 @@ export interface RootRouteChildren {
   ExperimentsLawsRoute: typeof ExperimentsLawsRoute
   LabCircularRoute: typeof LabCircularRoute
   LabCollisionRoute: typeof LabCollisionRoute
+  LabDragRoute: typeof LabDragRoute
   LabInclineRoute: typeof LabInclineRoute
+  LabOrbitalRoute: typeof LabOrbitalRoute
   LabPendulumRoute: typeof LabPendulumRoute
   LabProjectileRoute: typeof LabProjectileRoute
   LabRotationalRoute: typeof LabRotationalRoute
@@ -337,11 +363,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LabCollisionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lab_/drag': {
+      id: '/lab_/drag'
+      path: '/lab/drag'
+      fullPath: '/lab/drag'
+      preLoaderRoute: typeof LabDragRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab_/incline': {
       id: '/lab_/incline'
       path: '/lab/incline'
       fullPath: '/lab/incline'
       preLoaderRoute: typeof LabInclineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab_/orbital': {
+      id: '/lab_/orbital'
+      path: '/lab/orbital'
+      fullPath: '/lab/orbital'
+      preLoaderRoute: typeof LabOrbitalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lab_/pendulum': {
@@ -388,7 +428,9 @@ const rootRouteChildren: RootRouteChildren = {
   ExperimentsLawsRoute: ExperimentsLawsRoute,
   LabCircularRoute: LabCircularRoute,
   LabCollisionRoute: LabCollisionRoute,
+  LabDragRoute: LabDragRoute,
   LabInclineRoute: LabInclineRoute,
+  LabOrbitalRoute: LabOrbitalRoute,
   LabPendulumRoute: LabPendulumRoute,
   LabProjectileRoute: LabProjectileRoute,
   LabRotationalRoute: LabRotationalRoute,
