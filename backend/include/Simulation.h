@@ -78,7 +78,7 @@ public:
     void setParameter(const std::string& name, double value);
 
     // Converts elapsed real time into fixed update() steps.
-    void advance(double seconds);
+    virtual void advance(double seconds);
     // One display frame (1/60 s) of simulated time; used by "Step".
     void stepFrame();
 
